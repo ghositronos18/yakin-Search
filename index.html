@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Yakin Search – Doğu AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+:root{
+  --bg:#0b0e14;--card:#111827;--border:#374151;
+  --text:#e8eaed;--link:#8ab4f8;--url:#34d399;
+  --muted:#9ca3af;--accent:#8b5cf6;
+}
+body{margin:0;font-family:system-ui;background:var(--bg);color:var(--text);}
+.logo-image{position:absolute;top:12px;left:12px;width:160px;border:2px solid var(--accent);cursor:pointer;}
+.yakin-bar{display:flex;align-items:center;gap:16px;margin:12px 16px;padding:12px}
+.yakin-logo{font-size:1.6rem;font-weight:500;}
+.search-bar{flex:1;max-width:650px;position:relative;}
+.search-input{width:100%;padding:10px 44px 10px 16px;border:1px solid var(--border);
+border-radius:24px;background:var(--card);color:var(--text);}
+.search-bar-icons{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+display:flex;gap:8px;}
+.icon-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;}
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:12px;
+padding:14px 18px;margin:10px 16px;}
+.result-title{font-size:1.1rem;color:var(--link);text-decoration:none;}
+.result-url{color:var(--url);font-size:.9rem;}
+.dogu-ai-header{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.dogu-ai-icon{width:24px;height:24px;background:linear-gradient(135deg,#667eea,#764ba2);
+border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.voice-status{position:fixed;top:20px;right:20px;background:#111827;padding:12px 16px;
+border-radius:12px;display:none;gap:10px;}
+.voice-dot{width:10px;height:10px;background:#ef4444;border-radius:50%;
+animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.6;}}
+.loading-spinner{border:3px solid #1f2937;border-top:3px solid #2563eb;
+border-radius:50%;width:24px;height:24px;animation:spin 1s linear infinite;margin:20px auto;}
+@keyframes spin{100%{transform:rotate(360deg);}}
+</style>
+</head>
+
+<body>
+
+<img id="logoImage" class="logo-image" src="logo.jpg">
+
+<div class="yakin-bar">
+  <div class="yakin-logo">🚀 Yakin Search</div>
+  <div class="search-bar">
+    <input id="q" class="search-input" placeholder="Search with voice or text...">
+    <div class="search-bar-icons">
+      <button class="icon-btn text-search">🔍</button>
+      <button class="icon-btn dogu-ai">✨</button>
+      <button class="icon-btn voice-search">🎤</button>
+      <button class="icon-btn file-search">📁</button>
+    </div>
+  </div>
+</div>
+
+<div class="voice-status" id="voiceStatus">
+  <div class="voice-dot"></div>
+  <div class="voice-text">Listening for "Yakin"</div>
+</div>
+
+<div id="results"></div>
+
+<script>
+
+const GOOGLE_API_KEY = '';   
+const GOOGLE_CX = '';       
+
+const input = document.getElementById('q');
+const results = document.getElementById('results');
+const voiceBtn = document.querySelector('.voice-search');
+const voiceStatus = document.getElementById('voiceStatus');
+
+
+function generateAISummary(query, items) {
+  if (!items || !items.length) return '';
+  const text = items.map(i => i.snippet).join(' ');
+  const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [];
+  const important = sentences.filter(s => s.length > 60).slice(0, 5);
+
+  return `
+  <div class="result-card">
+    <div class="dogu-ai-header">
+      <div class="dogu-ai-icon">✨</div>
+      <b>Doğu AI Summary</b>
+    </div>
+    ${important.map(s=>`• ${s.trim()}`).join('<br>')}
+  </div>`;
+}
+
+
+async function yakinSearch(q){
+  results.innerHTML = '<div class="loading-spinner"></div>';
+  const url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(q)}&key=${GOOGLE_API_KEY}&cx=${GOOGLE_CX}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const items = data.items || [];
+
+  let html = generateAISummary(q, items);
+
+  items.forEach(r=>{
+    html+=`
+    <div class="result-card">
+      <a class="result-title" href="${r.link}" target="_blank">${r.title}</a>
+      <div class="result-url">${r.link}</div>
+      <div>${r.snippet}</div>
+    </div>`;
+  });
+
+  results.innerHTML = html || '<div class="result-card">No results</div>';
+}
+
+
+function handle(q){
+  if(!q) return;
+  if(q.toLowerCase().startsWith("open ")){
+    window.open("https://"+q.replace("open ",""),"_blank");
+    return;
+  }
+  yakinSearch(q);
+}
+
+
+let recognition;
+let isListening=false;
+
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+
+  recognition.onstart=()=>{
+    isListening=true;
+    voiceStatus.style.display="flex";
+  };
+
+  recognition.onresult=(e)=>{
+    const transcript = Array.from(e.results)
+      .map(r=>r[0].transcript).join(' ').toLowerCase();
+
+    if(transcript.includes("yakin")){
+      const cmd = transcript.replace(/.*yakin/i,'').trim();
+      if(cmd){
+        input.value=cmd;
+        handle(cmd);
+      }
+    }
+  };
+
+  recognition.onend=()=>recognition.start();
+}
+
+document.querySelector('.text-search').onclick=()=>handle(input.value);
+document.querySelector('.dogu-ai').onclick=()=>handle(input.value);
+document.querySelector('.voice-search').onclick=()=>{
+  if(!isListening) recognition.start();
+};
+document.querySelector('.file-search').onclick=()=>{
+  alert("File modal (your existing one)");
+};
+document.getElementById("logoImage").onclick=()=>{
+  input.value="";
+  results.innerHTML="";
+};
+
+input.addEventListener("keydown",e=>{
+  if(e.key==="Enter") handle(input.value);
+});
+</script>
+</body>
+</html>
