@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8">
 <title>Yakin Search – Doğu AI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
@@ -35,9 +36,9 @@ body{
 .top-logo{
   position:fixed;
   top:16px;
-  right:16px;
-  width:100px;
-  height:50px;
+  right:100px;
+  width:50px;
+  height:48px;
   object-fit:contain;
   cursor:pointer;
   z-index:1000;
@@ -60,11 +61,7 @@ header.top-mode ~ .top-logo{
   top:12px;
   left:12px;
 }
-  header.top-mode ~ .top-logo{
-    display:none;  
-  }
-}
-  
+
 header{
   display:flex;
   flex-direction:column;
@@ -710,7 +707,7 @@ header.top-mode .action-buttons{
 <img id="topLogo" class="top-logo" src="logo.jpg" alt="Yakin Search" title="Click to reset search">
 
 <header id="mainHeader">
-  <div class="yakin-logo">🚀Yakin Search</div>
+  <div class="yakin-logo">🚀 Yakin Search</div>
   
   <div class="search-container">
     <div class="search-box">
@@ -731,7 +728,7 @@ header.top-mode .action-buttons{
   
   <div class="action-buttons">
     <button class="action-btn" onclick="handleSearch(elements.input.value)">Yakin Search</button>
-    <button class="action-btn" onclick="handleSearch(elements.input.value)">I'm Hopeful</button>
+    <button class="action-btn" onclick="handleSearch(elements.input.value)">I'm Feeling Lucky</button>
   </div>
   
   <div class="welcome-hint" id="welcomeHint">
@@ -740,7 +737,9 @@ header.top-mode .action-buttons{
   </div>
 </header>
 
-
+<div class="tabs" id="tabs">
+  <div class="tab active" data-type="web">🔍 All</div>
+</div>
 
 <div class="voice-status" id="voiceStatus">
   <div class="voice-dot" id="voiceDot"></div>
