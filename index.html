@@ -16,7 +16,7 @@
   --url:#34d399;
   --muted:#9ca3af;
   --accent:#8b5cf6;
-  --hotword:#f59e0b;
+  --hotword:#10b981; /* Changed to green for Hope */
 }
 *{
   box-sizing:border-box;
@@ -142,12 +142,12 @@ header.top-mode .search-container{
 }
 .icon-btn.hotword-active{
   color:var(--hotword);
-  background:rgba(245,158,11,0.15);
+  background:rgba(16,185,129,0.15);
   animation:pulse-border 2s infinite;
 }
 @keyframes pulse-border{
-  0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0.4);}
-  50%{box-shadow:0 0 0 8px rgba(245,158,11,0);}
+  0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.4);}
+  50%{box-shadow:0 0 0 8px rgba(16,185,129,0);}
 }
 
 .hotword-badge{
@@ -579,6 +579,8 @@ header.top-mode .action-buttons{
   font-size:0.9rem;
   margin-top:24px;
   text-align:center;
+  max-width:500px;
+  line-height:1.6;
 }
 .welcome-hint kbd{
   background:var(--card);
@@ -611,7 +613,7 @@ header.top-mode .action-buttons{
     <div class="search-box">
       <input id="searchInput" class="search-input" placeholder="Search the web..." autocomplete="off">
       <div class="search-btns">
-        <button class="icon-btn" id="voiceBtn" title="Enable 'Hey Yakin' voice commands">
+        <button class="icon-btn" id="voiceBtn" title="Enable voice commands">
           🎤
           <span class="hotword-badge">ON</span>
         </button>
@@ -627,7 +629,8 @@ header.top-mode .action-buttons{
   </div>
   
   <div class="welcome-hint" id="welcomeHint">
-    Click 🎤 once to enable "Hey Yakin" voice commands • Say <b>"Hey Yakin search for..."</b>
+    Click 🎤 once, then say <b>"Hope"</b> to activate<br>
+    <small style="opacity:0.7">Try: "Hello Hope", "Hey Hope", "What's up Hope", or just "Hope search for..."</small>
   </div>
 </header>
 
@@ -640,7 +643,7 @@ header.top-mode .action-buttons{
 
 <div class="voice-status" id="voiceStatus">
   <div class="voice-dot"></div>
-  <div class="voice-text">Listening for "Hey Yakin"...</div>
+  <div class="voice-text">Listening for "Hope"...</div>
 </div>
 
 <div id="results"></div>
@@ -714,7 +717,7 @@ let currentTab = 'web';
 let currentPage = 1;
 let lastQuery = '';
 let isListening = false;
-let hotwordEnabled = false; // Starts false, true after click
+let hotwordEnabled = false;
 let recognition = null;
 let searchHistory = JSON.parse(localStorage.getItem('yakinHistory')) || [];
 let uploadedFiles = JSON.parse(localStorage.getItem('yakinFiles')) || [];
@@ -766,7 +769,7 @@ function init() {
   });
 }
 
-/* ========== WAKE WORD: "HEY YAKIN" ========== */
+/* ========== WAKE WORD: "HOPE" ========== */
 function initHotwordRecognition() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
     elements.voiceBtn.style.display = 'none';
@@ -775,8 +778,8 @@ function initHotwordRecognition() {
   
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SpeechRecognition();
-  recognition.continuous = true;      // Always listening once started
-  recognition.interimResults = false; // Only final results for wake word
+  recognition.continuous = true;
+  recognition.interimResults = false;
   recognition.lang = 'en-US';
   
   recognition.onstart = () => {
@@ -784,8 +787,8 @@ function initHotwordRecognition() {
     elements.voiceStatus.style.display = 'flex';
     elements.voiceStatus.classList.add('hotword-mode');
     elements.voiceBtn.classList.add('hotword-active');
-    elements.voiceText.innerText = 'Listening for "Hey Yakin"...';
-    console.log('Hotword listening started');
+    elements.voiceText.innerText = 'Listening for "Hope"...';
+    console.log('Listening for wake word: Hope');
   };
   
   recognition.onresult = (e) => {
@@ -796,14 +799,15 @@ function initHotwordRecognition() {
     
     console.log('Heard:', transcript);
     
-    // Wake word: "hey yakin" (easier to recognize than just "yakin")
-    if (transcript.includes('hey yakin')) {
-      console.log('Wake word detected!');
+    // Check if transcript contains "hope" anywhere
+    if (transcript.includes('hope')) {
+      console.log('Wake word "Hope" detected!');
       
-      // Extract everything after "hey yakin"
-      const command = transcript.split('hey yakin')[1]?.trim() || '';
+      // Extract everything after "hope"
+      const parts = transcript.split('hope');
+      const command = parts.slice(1).join('hope').trim(); // Get everything after first "hope"
       
-      elements.voiceText.innerText = '🎯 Hey Yakin detected!';
+      elements.voiceText.innerText = '🎯 Hope detected!';
       elements.input.placeholder = 'Processing...';
       
       // Visual feedback
@@ -814,10 +818,11 @@ function initHotwordRecognition() {
         elements.input.value = command;
         handleSearch(command);
       } else {
+        // Just "hope" was said, no command after
         elements.input.focus();
-        elements.voiceText.innerText = 'Say a command after "Hey Yakin"';
+        elements.voiceText.innerText = 'Say a command after "Hope"';
         setTimeout(() => {
-          if (hotwordEnabled) elements.voiceText.innerText = 'Listening for "Hey Yakin"...';
+          if (hotwordEnabled) elements.voiceText.innerText = 'Listening for "Hope"...';
         }, 2000);
       }
     }
@@ -825,7 +830,6 @@ function initHotwordRecognition() {
   
   recognition.onerror = (e) => {
     console.error('Speech error:', e.error);
-    // Auto-restart on error unless it's permission denied
     if (e.error === 'not-allowed') {
       elements.voiceText.innerText = 'Microphone blocked';
       stopHotword();
@@ -834,7 +838,6 @@ function initHotwordRecognition() {
   
   recognition.onend = () => {
     console.log('Recognition ended');
-    // Auto-restart if still enabled (always-on behavior)
     if (hotwordEnabled) {
       setTimeout(() => {
         if (hotwordEnabled && !isListening) {
@@ -862,12 +865,12 @@ function toggleHotwordMode() {
   if (hotwordEnabled) {
     stopHotword();
     hotwordEnabled = false;
-    elements.welcomeHint.innerHTML = 'Click 🎤 to enable "Hey Yakin" voice commands';
+    elements.welcomeHint.innerHTML = 'Click 🎤 to enable voice commands<br><small style="opacity:0.7">Try: "Hello Hope", "Hey Hope", "What\'s up Hope", or just "Hope search for..."</small>';
   } else {
     hotwordEnabled = true;
     try {
       recognition.start();
-      elements.welcomeHint.innerHTML = '<b style="color:var(--hotword)">Wake word active!</b> Say "Hey Yakin search for dogs"';
+      elements.welcomeHint.innerHTML = '<b style="color:var(--hotword)">Wake word active!</b> Say "Hope" followed by your command';
     } catch (e) {
       console.error('Start failed:', e);
       hotwordEnabled = false;
@@ -886,7 +889,7 @@ function stopHotword() {
   elements.voiceStatus.classList.remove('hotword-mode');
 }
 
-/* ========== LOCAL AI SUMMARY (NO API) ========== */
+/* ========== LOCAL AI SUMMARY ========== */
 function generateAISummary(query, items) {
   if (!items || items.length === 0) return '';
 
@@ -991,7 +994,7 @@ function displayResults(items, query, page) {
     return;
   }
   
-  // Always show AI summary using local function (no toggle needed)
+  // Always show AI summary
   let html = generateAISummary(query, items);
   
   items.forEach(item => {
@@ -1273,7 +1276,7 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-
+// Start
 init();
 </script>
 </body>
