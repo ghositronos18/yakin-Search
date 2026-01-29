@@ -60,6 +60,16 @@ body{
   }
 }
 
+.logo-image{
+  top:12px;
+  left:12px;
+  width:160px;
+  height:auto;
+  object-fit:contain;
+  border:2px solid var(--accent);
+  cursor:pointer;
+}
+
 header{
   display:flex;
   flex-direction:column;
@@ -702,7 +712,8 @@ header.top-mode .action-buttons{
 <body>
 
 <!-- Top Left Logo - Click to reset -->
-<img id="topLogo" class="top-logo" src="logo.jpg" alt="Yakin Search" title="Click to reset search">
+<img id="topLogo" class="top-logo" src="logo.png" alt="Yakin Search" title="Click to reset search">
+<img id="logoImage" class="logo-image" src="logo.jpg"
 
 <header id="mainHeader">
   <div class="yakin-logo">🚀Yakin Search</div>
