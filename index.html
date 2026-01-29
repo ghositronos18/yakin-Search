@@ -17,6 +17,7 @@
   --muted:#9ca3af;
   --accent:#8b5cf6;
   --hotword:#10b981;
+  --recording:#ef4444;
 }
 *{
   box-sizing:border-box;
@@ -105,7 +106,7 @@ header.top-mode .search-container{
   border:none;
   color:var(--text);
   font-size:16px;
-  padding:8px 12px;
+  padding:8px 32px 8px 12px; /* Right padding for X button */
   outline:none;
   width:100%;
 }
@@ -113,10 +114,42 @@ header.top-mode .search-container{
   color:var(--muted);
 }
 
+/* Google-style Clear Button */
+.clear-btn{
+  position:absolute;
+  right:140px; /* Position before voice/file/search buttons */
+  background:rgba(255,255,255,0.1);
+  border:none;
+  color:var(--muted);
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  cursor:pointer;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  transition:all 0.2s;
+  z-index:10;
+}
+.clear-btn:hover{
+  background:rgba(255,255,255,0.2);
+  color:var(--text);
+}
+.clear-btn.visible{
+  display:flex;
+}
+header.top-mode .clear-btn{
+  right:140px;
+}
+
 .search-btns{
   display:flex;
   gap:8px;
   align-items:center;
+  margin-left:8px;
+  border-left:1px solid var(--border);
+  padding-left:8px;
 }
 
 .icon-btn{
@@ -145,9 +178,18 @@ header.top-mode .search-container{
   background:rgba(16,185,129,0.15);
   animation:pulse-border 2s infinite;
 }
+.icon-btn.recording{
+  color:var(--recording);
+  background:rgba(239,68,68,0.15);
+  animation:pulse-recording 1s infinite;
+}
 @keyframes pulse-border{
   0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.4);}
   50%{box-shadow:0 0 0 8px rgba(16,185,129,0);}
+}
+@keyframes pulse-recording{
+  0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4);}
+  50%{box-shadow:0 0 0 8px rgba(239,68,68,0);}
 }
 
 .hotword-badge{
@@ -310,6 +352,7 @@ header.top-mode .action-buttons{
   line-height:1.4;
 }
 
+/* Voice Status - Shows different states */
 .voice-status{
   position:fixed;
   top:24px;
@@ -324,10 +367,13 @@ header.top-mode .action-buttons{
   z-index:10000;
   border:1px solid var(--border);
   animation:slideIn 0.3s ease;
-  min-width:220px;
+  min-width:240px;
 }
 .voice-status.hotword-mode{
   border-color:var(--hotword);
+}
+.voice-status.recording-mode{
+  border-color:var(--recording);
 }
 @keyframes slideIn{
   from{transform:translateX(100px);opacity:0;}
@@ -339,6 +385,11 @@ header.top-mode .action-buttons{
   background:var(--hotword);
   border-radius:50%;
   animation:pulse-hotword 2s infinite;
+  flex-shrink:0;
+}
+.voice-dot.recording{
+  background:var(--recording);
+  animation:pulse-recording 1s infinite;
 }
 @keyframes pulse-hotword{
   0%,100%{transform:scale(1);opacity:1;}
@@ -347,6 +398,7 @@ header.top-mode .action-buttons{
 .voice-text{
   font-size:0.9rem;
   font-weight:500;
+  flex:1;
 }
 
 .loading-spinner{
@@ -595,11 +647,14 @@ header.top-mode .action-buttons{
   header.top-mode{padding:12px 16px;gap:12px;}
   header.top-mode .yakin-logo{font-size:1.2rem;display:none;}
   .search-container{max-width:100%;}
+  .clear-btn{right:130px;}
+  header.top-mode .clear-btn{right:130px;}
   #results{padding:0 16px;margin:16px auto;}
   .file-services{grid-template-columns:repeat(2,1fr);}
   .action-buttons{flex-direction:column;width:100%;padding:0 20px;}
   .action-btn{width:100%;}
   .voice-status{top:auto;bottom:24px;right:16px;left:16px;justify-content:center;}
+  .voice-status{min-width:auto;}
 }
 </style>
 </head>
@@ -611,8 +666,12 @@ header.top-mode .action-buttons{
   <div class="search-container">
     <div class="search-box">
       <input id="searchInput" class="search-input" placeholder="Search the web..." autocomplete="off">
+      
+      <!-- Google-style Clear Button -->
+      <button class="clear-btn" id="clearBtn" title="Clear">✕</button>
+      
       <div class="search-btns">
-        <button class="icon-btn" id="voiceBtn" title="Enable voice commands">
+        <button class="icon-btn" id="voiceBtn" title="Voice commands (Search/Open/Play/Clear)">
           🎤
           <span class="hotword-badge">ON</span>
         </button>
@@ -628,8 +687,8 @@ header.top-mode .action-buttons{
   </div>
   
   <div class="welcome-hint" id="welcomeHint">
-    Click 🎤 once, then say: <b>"Hope"</b>, <b>"Search"</b>, <b>"Open"</b>, or <b>"Play"</b><br>
-    <small style="opacity:0.7">Examples: "Search for dogs", "Open gmail", "Play music", "Hope what's the weather"</small>
+    Click 🎤, then say: <b>"Search"</b>, <b>"Open"</b>, <b>"Play"</b>, or <b>"Clear"</b><br>
+    <small style="opacity:0.7">Try: "Search dogs", "Open gmail", "Play music", "Clear search bar"</small>
   </div>
 </header>
 
@@ -641,8 +700,8 @@ header.top-mode .action-buttons{
 </div>
 
 <div class="voice-status" id="voiceStatus">
-  <div class="voice-dot"></div>
-  <div class="voice-text">Listening...</div>
+  <div class="voice-dot" id="voiceDot"></div>
+  <div class="voice-text" id="voiceText">Listening...</div>
 </div>
 
 <div id="results"></div>
@@ -721,13 +780,20 @@ let recognition = null;
 let searchHistory = JSON.parse(localStorage.getItem('yakinHistory')) || [];
 let uploadedFiles = JSON.parse(localStorage.getItem('yakinFiles')) || [];
 
+// Command listening state
+let isWaitingForCommand = false;
+let commandTimeout = null;
+const WAKE_WORDS = ['search', 'open', 'play', 'clear', 'hope'];
+const COMMAND_TIMEOUT_MS = 5000; // 5 seconds
+
 const elements = {
   input: document.getElementById('searchInput'),
   results: document.getElementById('results'),
   header: document.getElementById('mainHeader'),
   tabs: document.getElementById('tabs'),
   voiceStatus: document.getElementById('voiceStatus'),
-  voiceText: document.querySelector('.voice-text'),
+  voiceText: document.getElementById('voiceText'),
+  voiceDot: document.getElementById('voiceDot'),
   fileModal: document.getElementById('fileModal'),
   uploadArea: document.getElementById('uploadArea'),
   fileInput: document.getElementById('fileInput'),
@@ -735,7 +801,8 @@ const elements = {
   voiceBtn: document.getElementById('voiceBtn'),
   fileBtn: document.getElementById('fileBtn'),
   textSearchBtn: document.getElementById('textSearchBtn'),
-  welcomeHint: document.getElementById('welcomeHint')
+  welcomeHint: document.getElementById('welcomeHint'),
+  clearBtn: document.getElementById('clearBtn')
 };
 
 function init() {
@@ -743,10 +810,15 @@ function init() {
   renderHistory();
   initHotwordRecognition();
   
+  // Input change listener for clear button visibility
+  elements.input.addEventListener('input', toggleClearButton);
+  elements.input.addEventListener('keyup', toggleClearButton);
+  
   elements.input.addEventListener('keydown', handleInputKeydown);
   elements.textSearchBtn.addEventListener('click', () => handleSearch(elements.input.value));
   elements.voiceBtn.addEventListener('click', toggleHotwordMode);
   elements.fileBtn.addEventListener('click', openFileModal);
+  elements.clearBtn.addEventListener('click', clearSearch);
   
   elements.uploadArea.addEventListener('click', () => elements.fileInput.click());
   elements.uploadArea.addEventListener('dragover', (e) => {
@@ -768,7 +840,26 @@ function init() {
   });
 }
 
-/* ========== WAKE WORDS: HOPE, SEARCH, OPEN, PLAY ========== */
+/* ========== CLEAR BUTTON LOGIC ========== */
+function toggleClearButton() {
+  if (elements.input.value.length > 0) {
+    elements.clearBtn.classList.add('visible');
+  } else {
+    elements.clearBtn.classList.remove('visible');
+  }
+}
+
+function clearSearch() {
+  elements.input.value = '';
+  elements.input.focus();
+  elements.clearBtn.classList.remove('visible');
+  // After clearing, if voice is active, we're ready for new command
+  if (hotwordEnabled) {
+    updateVoiceStatus('Ready for command...');
+  }
+}
+
+/* ========== WAKE WORD LOGIC WITH 5-SECOND WINDOW ========== */
 function initHotwordRecognition() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
     elements.voiceBtn.style.display = 'none';
@@ -778,96 +869,62 @@ function initHotwordRecognition() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SpeechRecognition();
   recognition.continuous = true;
-  recognition.interimResults = false;
+  recognition.interimResults = true; // Enable interim for better command capture
   recognition.lang = 'en-US';
-  
-  // Wake words that trigger the assistant
-  const WAKE_WORDS = ['hope', 'search', 'open', 'play'];
   
   recognition.onstart = () => {
     isListening = true;
     elements.voiceStatus.style.display = 'flex';
     elements.voiceStatus.classList.add('hotword-mode');
     elements.voiceBtn.classList.add('hotword-active');
-    elements.voiceText.innerText = 'Listening for commands...';
+    updateVoiceStatus('Say: Search, Open, Play, or Clear');
     console.log('Listening for wake words:', WAKE_WORDS);
   };
   
   recognition.onresult = (e) => {
-    const transcript = Array.from(e.results)
-      .map(r => r[0].transcript)
-      .join(' ')
-      .toLowerCase();
+    // Get final and interim results
+    let finalTranscript = '';
+    let interimTranscript = '';
     
-    console.log('Heard:', transcript);
-    
-    // Check if any wake word is present
-    let detectedWakeWord = null;
-    let wakeWordIndex = -1;
-    
-    for (const word of WAKE_WORDS) {
-      const index = transcript.indexOf(word);
-      if (index !== -1) {
-        // Prioritize the first occurrence in the transcript
-        if (wakeWordIndex === -1 || index < wakeWordIndex) {
-          wakeWordIndex = index;
-          detectedWakeWord = word;
-        }
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const transcript = e.results[i][0].transcript.toLowerCase().trim();
+      if (e.results[i].isFinal) {
+        finalTranscript += transcript + ' ';
+      } else {
+        interimTranscript += transcript;
       }
     }
     
-    if (detectedWakeWord) {
-      console.log(`Wake word "${detectedWakeWord}" detected!`);
-      
-      // Extract everything after the wake word
-      const afterWakeWord = transcript.substring(wakeWordIndex + detectedWakeWord.length).trim();
-      
-      // Handle special cases based on wake word type
-      let command = afterWakeWord;
-      let actionType = detectedWakeWord;
-      
-      // If "search for" or just "search", handle appropriately
-      if (detectedWakeWord === 'search' && afterWakeWord.startsWith('for ')) {
-        command = afterWakeWord.substring(4).trim(); // Remove "for "
-      }
-      
-      elements.voiceText.innerText = `🎯 ${detectedWakeWord.charAt(0).toUpperCase() + detectedWakeWord.slice(1)} detected!`;
-      elements.input.placeholder = 'Processing...';
-      
-      // Visual feedback
-      elements.voiceBtn.style.transform = 'scale(1.2)';
-      setTimeout(() => elements.voiceBtn.style.transform = '', 300);
-      
-      if (command.length > 0) {
-        // Construct the full command based on wake word type
-        let fullCommand = '';
+    const fullTranscript = (finalTranscript + interimTranscript).trim();
+    console.log('Heard:', fullTranscript, '| Final:', finalTranscript, '| Waiting:', isWaitingForCommand);
+    
+    // If we're waiting for a command (after wake word detected)
+    if (isWaitingForCommand) {
+      handleCommandInput(fullTranscript, finalTranscript);
+      return;
+    }
+    
+    // Check for clear command anytime (even without wake word in some contexts)
+    if (fullTranscript.includes('clear') && fullTranscript.includes('search')) {
+      executeCommand('clear', '');
+      return;
+    }
+    
+    // Check for wake words
+    for (const word of WAKE_WORDS) {
+      if (fullTranscript.includes(word)) {
+        // Extract what comes after the wake word
+        const index = fullTranscript.indexOf(word);
+        const afterWakeWord = fullTranscript.substring(index + word.length).trim();
         
-        switch(actionType) {
-          case 'search':
-            fullCommand = command;
-            break;
-          case 'open':
-            fullCommand = `open ${command}`;
-            break;
-          case 'play':
-            fullCommand = `play ${command}`;
-            break;
-          case 'hope':
-            fullCommand = command;
-            break;
-          default:
-            fullCommand = command;
+        // If there's immediate content after wake word, execute immediately
+        if (afterWakeWord.length > 0 && finalTranscript.length > 0) {
+          executeCommand(word, afterWakeWord);
+        } else {
+          // Start 5-second command window
+          startCommandWindow(word);
         }
-        
-        elements.input.value = fullCommand;
-        handleSearch(fullCommand);
-      } else {
-        // Just the wake word was said, no command after
-        elements.input.focus();
-        elements.voiceText.innerText = `Say something after "${detectedWakeWord}"`;
-        setTimeout(() => {
-          if (hotwordEnabled) elements.voiceText.innerText = 'Listening for commands...';
-        }, 2000);
+        break;
       }
     }
   };
@@ -875,7 +932,7 @@ function initHotwordRecognition() {
   recognition.onerror = (e) => {
     console.error('Speech error:', e.error);
     if (e.error === 'not-allowed') {
-      elements.voiceText.innerText = 'Microphone blocked';
+      updateVoiceStatus('Microphone blocked');
       stopHotword();
     }
   };
@@ -892,12 +949,146 @@ function initHotwordRecognition() {
         }
       }, 100);
     } else {
-      isListening = false;
-      elements.voiceStatus.style.display = 'none';
-      elements.voiceBtn.classList.remove('hotword-active');
-      elements.voiceStatus.classList.remove('hotword-mode');
+      cleanupVoiceState();
     }
   };
+}
+
+function startCommandWindow(wakeWord) {
+  isWaitingForCommand = true;
+  
+  // Visual feedback
+  elements.voiceStatus.classList.remove('hotword-mode');
+  elements.voiceStatus.classList.add('recording-mode');
+  elements.voiceDot.classList.add('recording');
+  elements.voiceBtn.classList.add('recording');
+  updateVoiceStatus(`"${wakeWord}" detected! Speak now (${COMMAND_TIMEOUT_MS/1000}s)`);
+  
+  console.log(`Wake word "${wakeWord}" detected, waiting ${COMMAND_TIMEOUT_MS}ms for command...`);
+  
+  // Clear any existing timeout
+  if (commandTimeout) clearTimeout(commandTimeout);
+  
+  // Set timeout to cancel command window
+  commandTimeout = setTimeout(() => {
+    if (isWaitingForCommand) {
+      console.log('Command window timeout');
+      isWaitingForCommand = false;
+      updateVoiceStatus('Timeout. Say wake word again...');
+      elements.voiceStatus.classList.add('hotword-mode');
+      elements.voiceStatus.classList.remove('recording-mode');
+      elements.voiceDot.classList.remove('recording');
+      elements.voiceBtn.classList.remove('recording');
+    }
+  }, COMMAND_TIMEOUT_MS);
+}
+
+function handleCommandInput(fullTranscript, finalTranscript) {
+  // If we have final text, execute it
+  if (finalTranscript.trim().length > 0) {
+    const commandText = finalTranscript.trim();
+    console.log('Command received:', commandText);
+    
+    // Clear timeout
+    if (commandTimeout) clearTimeout(commandTimeout);
+    isWaitingForCommand = false;
+    
+    // Determine which wake word was used originally (from the transcript)
+    let detectedWakeWord = 'search'; // default
+    
+    // Check if the full transcript contains the wake word at the beginning
+    for (const word of WAKE_WORDS) {
+      if (fullTranscript.includes(word)) {
+        detectedWakeWord = word;
+        // Extract only what comes after the wake word if it wasn't already extracted
+        const index = fullTranscript.indexOf(word);
+        const afterWord = fullTranscript.substring(index + word.length).trim();
+        if (afterWord.length > 0) {
+          executeCommand(word, afterWord);
+          return;
+        }
+        break;
+      }
+    }
+    
+    executeCommand(detectedWakeWord, commandText);
+  }
+}
+
+function executeCommand(wakeWord, commandText) {
+  console.log(`Executing: ${wakeWord} - ${commandText}`);
+  
+  // Clear timeout if exists
+  if (commandTimeout) clearTimeout(commandTimeout);
+  isWaitingForCommand = false;
+  
+  // Reset UI state
+  elements.voiceStatus.classList.add('hotword-mode');
+  elements.voiceStatus.classList.remove('recording-mode');
+  elements.voiceDot.classList.remove('recording');
+  elements.voiceBtn.classList.remove('recording');
+  
+  // Process based on wake word type
+  switch(wakeWord) {
+    case 'clear':
+      clearSearch();
+      updateVoiceStatus('Search cleared!');
+      setTimeout(() => {
+        if (hotwordEnabled) updateVoiceStatus('Ready for command...');
+      }, 1500);
+      break;
+      
+    case 'search':
+    case 'hope':
+      if (commandText) {
+        elements.input.value = commandText;
+        toggleClearButton();
+        handleSearch(commandText);
+        updateVoiceStatus(`Searching: ${commandText}`);
+      } else {
+        elements.input.focus();
+        updateVoiceStatus('What should I search for?');
+      }
+      break;
+      
+    case 'open':
+      if (commandText) {
+        const site = commandText.replace(/\s+/g, '').toLowerCase();
+        window.open(`https://${site}.com`, '_blank');
+        showMessage(`Opening ${site}.com...`);
+        updateVoiceStatus(`Opened ${site}.com`);
+        elements.input.value = `open ${commandText}`;
+        toggleClearButton();
+      } else {
+        updateVoiceStatus('What site should I open?');
+      }
+      setTimeout(() => {
+        if (hotwordEnabled && !elements.input.value) updateVoiceStatus('Ready for command...');
+      }, 2000);
+      break;
+      
+    case 'play':
+      if (commandText) {
+        const musicQuery = `play ${commandText}`;
+        elements.input.value = musicQuery;
+        toggleClearButton();
+        handleMusicQuery(musicQuery);
+        updateVoiceStatus(`Playing: ${commandText}`);
+      } else {
+        updateVoiceStatus('What should I play?');
+      }
+      break;
+  }
+}
+
+function cleanupVoiceState() {
+  isListening = false;
+  isWaitingForCommand = false;
+  if (commandTimeout) clearTimeout(commandTimeout);
+  elements.voiceStatus.style.display = 'none';
+  elements.voiceBtn.classList.remove('hotword-active', 'recording');
+  elements.voiceStatus.classList.remove('hotword-mode', 'recording-mode');
+  elements.voiceDot.classList.remove('recording');
 }
 
 function toggleHotwordMode() {
@@ -909,12 +1100,12 @@ function toggleHotwordMode() {
   if (hotwordEnabled) {
     stopHotword();
     hotwordEnabled = false;
-    elements.welcomeHint.innerHTML = 'Click 🎤 to enable voice commands<br><small style="opacity:0.7">Say: "Hope", "Search", "Open", or "Play" followed by your command</small>';
+    elements.welcomeHint.innerHTML = 'Click 🎤 to enable voice commands<br><small style="opacity:0.7">Try: "Search dogs", "Open gmail", "Play music", "Clear"</small>';
   } else {
     hotwordEnabled = true;
     try {
       recognition.start();
-      elements.welcomeHint.innerHTML = '<b style="color:var(--hotword)">Voice active!</b> Say "Search...", "Open...", "Play...", or "Hope..."';
+      elements.welcomeHint.innerHTML = '<b style="color:var(--hotword)">Voice active!</b> Say "Search...", "Open...", "Play...", or "Clear"';
     } catch (e) {
       console.error('Start failed:', e);
       hotwordEnabled = false;
@@ -927,23 +1118,20 @@ function stopHotword() {
   if (recognition) {
     try { recognition.stop(); } catch (e) {}
   }
-  isListening = false;
-  elements.voiceStatus.style.display = 'none';
-  elements.voiceBtn.classList.remove('hotword-active');
-  elements.voiceStatus.classList.remove('hotword-mode');
+  cleanupVoiceState();
+}
+
+function updateVoiceStatus(text) {
+  elements.voiceText.innerText = text;
 }
 
 /* ========== LOCAL AI SUMMARY ========== */
 function generateAISummary(query, items) {
   if (!items || items.length === 0) return '';
-
   const text = items.map(i => i.snippet).join(' ');
-  
   const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [];
-  const important = sentences
-    .filter(s => s.length > 60)
-    .slice(0, 5);
-
+  const important = sentences.filter(s => s.length > 60).slice(0, 5);
+  
   return `
     <div class="result-card" style="border-left:3px solid var(--accent)">
       <div class="dogu-ai-header">
@@ -973,22 +1161,21 @@ async function handleSearch(query) {
   elements.welcomeHint.style.display = 'none';
   
   addToHistory(q);
+  toggleClearButton();
   
-  const lower = q.toLowerCase();
-  
-  if (lower.startsWith('play ')) {
+  if (q.toLowerCase().startsWith('play ')) {
     handleMusicQuery(q);
     return;
   }
   
-  if (lower.startsWith('open ')) {
+  if (q.toLowerCase().startsWith('open ')) {
     const site = q.replace(/^open\s+/i, '').replace(/\s+/g, '');
     window.open(`https://${site}.com`, '_blank');
     showMessage(`Opening ${site}.com...`);
     return;
   }
   
-  if (lower.includes('gmail')) {
+  if (q.toLowerCase().includes('gmail')) {
     window.open('https://mail.google.com', '_blank');
     showMessage('Opening Gmail...');
     return;
@@ -1020,7 +1207,6 @@ async function yakinSearch(query, type = 'web', page = 1) {
       showError(`API Error: ${data.error.message}`);
       return;
     }
-    
     displayResults(data.items || [], query, page);
   } catch (e) {
     showError('Search failed. Check your connection.');
@@ -1296,7 +1482,9 @@ function handleInputKeydown(e) {
     e.preventDefault();
     openFileModal();
   } else if (e.key === 'Escape') {
-    if (elements.fileModal.style.display === 'flex') {
+    if (isListening && hotwordEnabled) {
+      stopHotword();
+    } else if (elements.fileModal.style.display === 'flex') {
       closeFileModal();
     } else {
       elements.input.blur();
