@@ -16,7 +16,7 @@
   --url:#34d399;
   --muted:#9ca3af;
   --accent:#8b5cf6;
-  --hotword:#10b981; /* Changed to green for Hope */
+  --hotword:#10b981;
 }
 *{
   box-sizing:border-box;
@@ -286,7 +286,6 @@ header.top-mode .action-buttons{
   line-height:1.6;
 }
 
-/* AI Summary Styles */
 .dogu-ai-header{
   display:flex;
   align-items:center;
@@ -579,7 +578,7 @@ header.top-mode .action-buttons{
   font-size:0.9rem;
   margin-top:24px;
   text-align:center;
-  max-width:500px;
+  max-width:600px;
   line-height:1.6;
 }
 .welcome-hint kbd{
@@ -629,8 +628,8 @@ header.top-mode .action-buttons{
   </div>
   
   <div class="welcome-hint" id="welcomeHint">
-    Click 🎤 once, then say <b>"Hope"</b> to activate<br>
-    <small style="opacity:0.7">Try: "Hello Hope", "Hey Hope", "What's up Hope", or just "Hope search for..."</small>
+    Click 🎤 once, then say: <b>"Hope"</b>, <b>"Search"</b>, <b>"Open"</b>, or <b>"Play"</b><br>
+    <small style="opacity:0.7">Examples: "Search for dogs", "Open gmail", "Play music", "Hope what's the weather"</small>
   </div>
 </header>
 
@@ -643,7 +642,7 @@ header.top-mode .action-buttons{
 
 <div class="voice-status" id="voiceStatus">
   <div class="voice-dot"></div>
-  <div class="voice-text">Listening for "Hope"...</div>
+  <div class="voice-text">Listening...</div>
 </div>
 
 <div id="results"></div>
@@ -769,7 +768,7 @@ function init() {
   });
 }
 
-/* ========== WAKE WORD: "HOPE" ========== */
+/* ========== WAKE WORDS: HOPE, SEARCH, OPEN, PLAY ========== */
 function initHotwordRecognition() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
     elements.voiceBtn.style.display = 'none';
@@ -782,13 +781,16 @@ function initHotwordRecognition() {
   recognition.interimResults = false;
   recognition.lang = 'en-US';
   
+  // Wake words that trigger the assistant
+  const WAKE_WORDS = ['hope', 'search', 'open', 'play'];
+  
   recognition.onstart = () => {
     isListening = true;
     elements.voiceStatus.style.display = 'flex';
     elements.voiceStatus.classList.add('hotword-mode');
     elements.voiceBtn.classList.add('hotword-active');
-    elements.voiceText.innerText = 'Listening for "Hope"...';
-    console.log('Listening for wake word: Hope');
+    elements.voiceText.innerText = 'Listening for commands...';
+    console.log('Listening for wake words:', WAKE_WORDS);
   };
   
   recognition.onresult = (e) => {
@@ -799,15 +801,37 @@ function initHotwordRecognition() {
     
     console.log('Heard:', transcript);
     
-    // Check if transcript contains "hope" anywhere
-    if (transcript.includes('hope')) {
-      console.log('Wake word "Hope" detected!');
+    // Check if any wake word is present
+    let detectedWakeWord = null;
+    let wakeWordIndex = -1;
+    
+    for (const word of WAKE_WORDS) {
+      const index = transcript.indexOf(word);
+      if (index !== -1) {
+        // Prioritize the first occurrence in the transcript
+        if (wakeWordIndex === -1 || index < wakeWordIndex) {
+          wakeWordIndex = index;
+          detectedWakeWord = word;
+        }
+      }
+    }
+    
+    if (detectedWakeWord) {
+      console.log(`Wake word "${detectedWakeWord}" detected!`);
       
-      // Extract everything after "hope"
-      const parts = transcript.split('hope');
-      const command = parts.slice(1).join('hope').trim(); // Get everything after first "hope"
+      // Extract everything after the wake word
+      const afterWakeWord = transcript.substring(wakeWordIndex + detectedWakeWord.length).trim();
       
-      elements.voiceText.innerText = '🎯 Hope detected!';
+      // Handle special cases based on wake word type
+      let command = afterWakeWord;
+      let actionType = detectedWakeWord;
+      
+      // If "search for" or just "search", handle appropriately
+      if (detectedWakeWord === 'search' && afterWakeWord.startsWith('for ')) {
+        command = afterWakeWord.substring(4).trim(); // Remove "for "
+      }
+      
+      elements.voiceText.innerText = `🎯 ${detectedWakeWord.charAt(0).toUpperCase() + detectedWakeWord.slice(1)} detected!`;
       elements.input.placeholder = 'Processing...';
       
       // Visual feedback
@@ -815,14 +839,34 @@ function initHotwordRecognition() {
       setTimeout(() => elements.voiceBtn.style.transform = '', 300);
       
       if (command.length > 0) {
-        elements.input.value = command;
-        handleSearch(command);
+        // Construct the full command based on wake word type
+        let fullCommand = '';
+        
+        switch(actionType) {
+          case 'search':
+            fullCommand = command;
+            break;
+          case 'open':
+            fullCommand = `open ${command}`;
+            break;
+          case 'play':
+            fullCommand = `play ${command}`;
+            break;
+          case 'hope':
+            fullCommand = command;
+            break;
+          default:
+            fullCommand = command;
+        }
+        
+        elements.input.value = fullCommand;
+        handleSearch(fullCommand);
       } else {
-        // Just "hope" was said, no command after
+        // Just the wake word was said, no command after
         elements.input.focus();
-        elements.voiceText.innerText = 'Say a command after "Hope"';
+        elements.voiceText.innerText = `Say something after "${detectedWakeWord}"`;
         setTimeout(() => {
-          if (hotwordEnabled) elements.voiceText.innerText = 'Listening for "Hope"...';
+          if (hotwordEnabled) elements.voiceText.innerText = 'Listening for commands...';
         }, 2000);
       }
     }
@@ -865,12 +909,12 @@ function toggleHotwordMode() {
   if (hotwordEnabled) {
     stopHotword();
     hotwordEnabled = false;
-    elements.welcomeHint.innerHTML = 'Click 🎤 to enable voice commands<br><small style="opacity:0.7">Try: "Hello Hope", "Hey Hope", "What\'s up Hope", or just "Hope search for..."</small>';
+    elements.welcomeHint.innerHTML = 'Click 🎤 to enable voice commands<br><small style="opacity:0.7">Say: "Hope", "Search", "Open", or "Play" followed by your command</small>';
   } else {
     hotwordEnabled = true;
     try {
       recognition.start();
-      elements.welcomeHint.innerHTML = '<b style="color:var(--hotword)">Wake word active!</b> Say "Hope" followed by your command';
+      elements.welcomeHint.innerHTML = '<b style="color:var(--hotword)">Voice active!</b> Say "Search...", "Open...", "Play...", or "Hope..."';
     } catch (e) {
       console.error('Start failed:', e);
       hotwordEnabled = false;
@@ -895,7 +939,6 @@ function generateAISummary(query, items) {
 
   const text = items.map(i => i.snippet).join(' ');
   
-  // Fast local "AI-like" summarizer
   const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [];
   const important = sentences
     .filter(s => s.length > 60)
@@ -994,7 +1037,6 @@ function displayResults(items, query, page) {
     return;
   }
   
-  // Always show AI summary
   let html = generateAISummary(query, items);
   
   items.forEach(item => {
