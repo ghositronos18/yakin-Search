@@ -59,7 +59,19 @@ body{
     display: none;
   }
 }
-
+@media(max-width:768px){
+  .top-logo{
+    width:60px;      /* Medium on mobile */
+    height:30px;
+    top:12px;
+    left:12px;
+  }
+  header.top-mode ~ .top-logo{
+    display:none;    /* Hide on mobile when searching */
+  }
+  /* ... rest of mobile styles ... */
+}
+  
 header{
   display:flex;
   flex-direction:column;
