@@ -895,14 +895,13 @@ function resetSearch() {
   elements.input.value = '';
   elements.clearBtn.classList.remove('visible');
   
-  // Reset to center mode
+  // THIS LINE shows the logo (removes top-mode class):
   elements.header.classList.remove('top-mode');
   elements.tabs.classList.remove('visible');
   elements.results.innerHTML = '';
   elements.welcomeHint.style.display = 'block';
   elements.welcomeHint.innerHTML = 'Click 🎤 to activate voice • Always listening when ON<br><small style="opacity:0.7">Say: "Search...", "Open...", "Play...", or "Clear" • You have 10 seconds after wake word</small>';
   
-  // Focus input
   elements.input.focus();
   
   console.log('Search reset via logo click');
