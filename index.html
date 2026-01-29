@@ -106,7 +106,7 @@ header.top-mode .search-container{
   border:none;
   color:var(--text);
   font-size:16px;
-  padding:8px 32px 8px 12px; /* Right padding for X button */
+  padding:8px 32px 8px 12px;
   outline:none;
   width:100%;
 }
@@ -114,10 +114,9 @@ header.top-mode .search-container{
   color:var(--muted);
 }
 
-/* Google-style Clear Button */
 .clear-btn{
   position:absolute;
-  right:140px; /* Position before voice/file/search buttons */
+  right:140px;
   background:rgba(255,255,255,0.1);
   border:none;
   color:var(--muted);
@@ -352,7 +351,6 @@ header.top-mode .action-buttons{
   line-height:1.4;
 }
 
-/* Voice Status - Shows different states */
 .voice-status{
   position:fixed;
   top:24px;
@@ -367,7 +365,7 @@ header.top-mode .action-buttons{
   z-index:10000;
   border:1px solid var(--border);
   animation:slideIn 0.3s ease;
-  min-width:240px;
+  min-width:260px;
 }
 .voice-status.hotword-mode{
   border-color:var(--hotword);
@@ -399,6 +397,12 @@ header.top-mode .action-buttons{
   font-size:0.9rem;
   font-weight:500;
   flex:1;
+}
+.countdown{
+  font-family:monospace;
+  font-size:0.85rem;
+  color:var(--recording);
+  margin-left:8px;
 }
 
 .loading-spinner{
@@ -653,8 +657,7 @@ header.top-mode .action-buttons{
   .file-services{grid-template-columns:repeat(2,1fr);}
   .action-buttons{flex-direction:column;width:100%;padding:0 20px;}
   .action-btn{width:100%;}
-  .voice-status{top:auto;bottom:24px;right:16px;left:16px;justify-content:center;}
-  .voice-status{min-width:auto;}
+  .voice-status{top:auto;bottom:24px;right:16px;left:16px;justify-content:center;min-width:auto;}
 }
 </style>
 </head>
@@ -667,7 +670,6 @@ header.top-mode .action-buttons{
     <div class="search-box">
       <input id="searchInput" class="search-input" placeholder="Search the web..." autocomplete="off">
       
-      <!-- Google-style Clear Button -->
       <button class="clear-btn" id="clearBtn" title="Clear">✕</button>
       
       <div class="search-btns">
@@ -683,19 +685,26 @@ header.top-mode .action-buttons{
   
   <div class="action-buttons">
     <button class="action-btn" onclick="handleSearch(elements.input.value)">Yakin Search</button>
-    <button class="action-btn" onclick="handleSearch(elements.input.value)">I'm Hopeful</button>
+    <button class="action-btn" onclick="handleSearch(elements.input.value)">I'm Feeling Lucky</button>
   </div>
   
   <div class="welcome-hint" id="welcomeHint">
-    Click 🎤, then say: <b>"Search"</b>, <b>"Open"</b>, <b>"Play"</b>, or <b>"Clear"</b><br>
-    <small style="opacity:0.7">Try: "Search dogs", "Open gmail", "Play music", "Clear search bar"</small>
+    Click 🎤 to activate voice • Always listening when ON<br>
+    <small style="opacity:0.7">Say: "Search...", "Open...", "Play...", or "Clear" • You have 10 seconds after wake word</small>
   </div>
 </header>
 
+<div class="tabs" id="tabs">
+  <div class="tab active" data-type="web">🔍 All</div>
+  <div class="tab" data-type="images">🖼️ Images</div>
+  <div class="tab" data-type="videos">🎥 Videos</div>
+  <div class="tab" data-type="news">📰 News</div>
+</div>
 
 <div class="voice-status" id="voiceStatus">
   <div class="voice-dot" id="voiceDot"></div>
   <div class="voice-text" id="voiceText">Listening...</div>
+  <span class="countdown" id="countdown"></span>
 </div>
 
 <div id="results"></div>
@@ -760,9 +769,9 @@ header.top-mode .action-buttons{
 
 <script>
 const CONFIG = {
-  GOOGLE_API_KEY: 'AIzaSyAOsM-CRIL8bHkFjfzRUJAi8P1oSlLZ4YE',
-  GOOGLE_CX: '43cb0615f9ddd4dbe',
-  YOUTUBE_API_KEY: 'AIzaSyCKFVBOrnw-SlRVyT8bb3zfwex4dvHSf3w'
+  GOOGLE_API_KEY: '',
+  GOOGLE_CX: '',
+  YOUTUBE_API_KEY: ''
 };
 
 let currentTab = 'web';
@@ -777,8 +786,9 @@ let uploadedFiles = JSON.parse(localStorage.getItem('yakinFiles')) || [];
 // Command listening state
 let isWaitingForCommand = false;
 let commandTimeout = null;
+let countdownInterval = null;
 const WAKE_WORDS = ['search', 'open', 'play', 'clear', 'hope'];
-const COMMAND_TIMEOUT_MS = 5000; // 5 seconds
+const COMMAND_TIMEOUT_MS = 10000; // 10 seconds
 
 const elements = {
   input: document.getElementById('searchInput'),
@@ -788,6 +798,7 @@ const elements = {
   voiceStatus: document.getElementById('voiceStatus'),
   voiceText: document.getElementById('voiceText'),
   voiceDot: document.getElementById('voiceDot'),
+  countdown: document.getElementById('countdown'),
   fileModal: document.getElementById('fileModal'),
   uploadArea: document.getElementById('uploadArea'),
   fileInput: document.getElementById('fileInput'),
@@ -804,7 +815,6 @@ function init() {
   renderHistory();
   initHotwordRecognition();
   
-  // Input change listener for clear button visibility
   elements.input.addEventListener('input', toggleClearButton);
   elements.input.addEventListener('keyup', toggleClearButton);
   
@@ -834,7 +844,7 @@ function init() {
   });
 }
 
-/* ========== CLEAR BUTTON LOGIC ========== */
+/* ========== CLEAR BUTTON ========== */
 function toggleClearButton() {
   if (elements.input.value.length > 0) {
     elements.clearBtn.classList.add('visible');
@@ -848,12 +858,12 @@ function clearSearch() {
   elements.input.focus();
   elements.clearBtn.classList.remove('visible');
   // After clearing, if voice is active, we're ready for new command
-  if (hotwordEnabled) {
+  if (hotwordEnabled && !isWaitingForCommand) {
     updateVoiceStatus('Ready for command...');
   }
 }
 
-/* ========== WAKE WORD LOGIC WITH 5-SECOND WINDOW ========== */
+/* ========== PERSISTENT VOICE LISTENING ========== */
 function initHotwordRecognition() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
     elements.voiceBtn.style.display = 'none';
@@ -862,8 +872,8 @@ function initHotwordRecognition() {
   
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SpeechRecognition();
-  recognition.continuous = true;
-  recognition.interimResults = true; // Enable interim for better command capture
+  recognition.continuous = true;  // Keep listening continuously
+  recognition.interimResults = true;
   recognition.lang = 'en-US';
   
   recognition.onstart = () => {
@@ -871,12 +881,11 @@ function initHotwordRecognition() {
     elements.voiceStatus.style.display = 'flex';
     elements.voiceStatus.classList.add('hotword-mode');
     elements.voiceBtn.classList.add('hotword-active');
-    updateVoiceStatus('Say: Search, Open, Play, or Clear');
-    console.log('Listening for wake words:', WAKE_WORDS);
+    updateVoiceStatus('Always listening...');
+    console.log('Voice always-on mode started');
   };
   
   recognition.onresult = (e) => {
-    // Get final and interim results
     let finalTranscript = '';
     let interimTranscript = '';
     
@@ -890,7 +899,7 @@ function initHotwordRecognition() {
     }
     
     const fullTranscript = (finalTranscript + interimTranscript).trim();
-    console.log('Heard:', fullTranscript, '| Final:', finalTranscript, '| Waiting:', isWaitingForCommand);
+    console.log('Heard:', fullTranscript, '| Waiting:', isWaitingForCommand);
     
     // If we're waiting for a command (after wake word detected)
     if (isWaitingForCommand) {
@@ -898,8 +907,8 @@ function initHotwordRecognition() {
       return;
     }
     
-    // Check for clear command anytime (even without wake word in some contexts)
-    if (fullTranscript.includes('clear') && fullTranscript.includes('search')) {
+    // Check for clear command anytime
+    if (fullTranscript.includes('clear') && (fullTranscript.includes('search') || fullTranscript.includes('bar'))) {
       executeCommand('clear', '');
       return;
     }
@@ -907,7 +916,6 @@ function initHotwordRecognition() {
     // Check for wake words
     for (const word of WAKE_WORDS) {
       if (fullTranscript.includes(word)) {
-        // Extract what comes after the wake word
         const index = fullTranscript.indexOf(word);
         const afterWakeWord = fullTranscript.substring(index + word.length).trim();
         
@@ -915,7 +923,7 @@ function initHotwordRecognition() {
         if (afterWakeWord.length > 0 && finalTranscript.length > 0) {
           executeCommand(word, afterWakeWord);
         } else {
-          // Start 5-second command window
+          // Start 10-second command window
           startCommandWindow(word);
         }
         break;
@@ -925,21 +933,40 @@ function initHotwordRecognition() {
   
   recognition.onerror = (e) => {
     console.error('Speech error:', e.error);
+    // Auto-restart on error unless permission denied
     if (e.error === 'not-allowed') {
       updateVoiceStatus('Microphone blocked');
       stopHotword();
+    } else if (hotwordEnabled) {
+      // Restart automatically for continuous listening
+      setTimeout(() => {
+        if (hotwordEnabled && !isListening) {
+          try { recognition.start(); } catch(err) {}
+        }
+      }, 500);
     }
   };
   
   recognition.onend = () => {
-    console.log('Recognition ended');
+    console.log('Recognition ended - auto-restarting...');
+    isListening = false;
+    
+    // CRITICAL: Always restart if hotword mode is enabled
     if (hotwordEnabled) {
       setTimeout(() => {
         if (hotwordEnabled && !isListening) {
-          recognition.start().catch(err => {
-            console.error('Restart failed:', err);
-            stopHotword();
-          });
+          try {
+            recognition.start();
+            console.log('Auto-restarted successfully');
+          } catch (err) {
+            console.error('Auto-restart failed:', err);
+            // Try again in 1 second
+            setTimeout(() => {
+              if (hotwordEnabled && !isListening) {
+                try { recognition.start(); } catch(e) {}
+              }
+            }, 1000);
+          }
         }
       }, 100);
     } else {
@@ -950,25 +977,41 @@ function initHotwordRecognition() {
 
 function startCommandWindow(wakeWord) {
   isWaitingForCommand = true;
+  let timeLeft = COMMAND_TIMEOUT_MS / 1000;
   
   // Visual feedback
   elements.voiceStatus.classList.remove('hotword-mode');
   elements.voiceStatus.classList.add('recording-mode');
   elements.voiceDot.classList.add('recording');
   elements.voiceBtn.classList.add('recording');
-  updateVoiceStatus(`"${wakeWord}" detected! Speak now (${COMMAND_TIMEOUT_MS/1000}s)`);
+  updateVoiceStatus(`"${wakeWord}" detected! Speak now`);
+  elements.countdown.textContent = `${timeLeft}s`;
   
   console.log(`Wake word "${wakeWord}" detected, waiting ${COMMAND_TIMEOUT_MS}ms for command...`);
   
-  // Clear any existing timeout
+  // Clear any existing timeouts
   if (commandTimeout) clearTimeout(commandTimeout);
+  if (countdownInterval) clearInterval(countdownInterval);
+  
+  // Countdown timer
+  countdownInterval = setInterval(() => {
+    timeLeft--;
+    elements.countdown.textContent = `${timeLeft}s`;
+    
+    if (timeLeft <= 0) {
+      clearInterval(countdownInterval);
+      elements.countdown.textContent = '';
+    }
+  }, 1000);
   
   // Set timeout to cancel command window
   commandTimeout = setTimeout(() => {
     if (isWaitingForCommand) {
       console.log('Command window timeout');
       isWaitingForCommand = false;
-      updateVoiceStatus('Timeout. Say wake word again...');
+      clearInterval(countdownInterval);
+      elements.countdown.textContent = '';
+      updateVoiceStatus('Timeout. Ready for next command...');
       elements.voiceStatus.classList.add('hotword-mode');
       elements.voiceStatus.classList.remove('recording-mode');
       elements.voiceDot.classList.remove('recording');
@@ -978,23 +1021,21 @@ function startCommandWindow(wakeWord) {
 }
 
 function handleCommandInput(fullTranscript, finalTranscript) {
-  // If we have final text, execute it
   if (finalTranscript.trim().length > 0) {
     const commandText = finalTranscript.trim();
     console.log('Command received:', commandText);
     
-    // Clear timeout
+    // Clear timeout and countdown
     if (commandTimeout) clearTimeout(commandTimeout);
+    if (countdownInterval) clearInterval(countdownInterval);
+    elements.countdown.textContent = '';
     isWaitingForCommand = false;
     
-    // Determine which wake word was used originally (from the transcript)
-    let detectedWakeWord = 'search'; // default
-    
-    // Check if the full transcript contains the wake word at the beginning
+    // Determine which wake word was used
+    let detectedWakeWord = 'search';
     for (const word of WAKE_WORDS) {
       if (fullTranscript.includes(word)) {
         detectedWakeWord = word;
-        // Extract only what comes after the wake word if it wasn't already extracted
         const index = fullTranscript.indexOf(word);
         const afterWord = fullTranscript.substring(index + word.length).trim();
         if (afterWord.length > 0) {
@@ -1012,11 +1053,13 @@ function handleCommandInput(fullTranscript, finalTranscript) {
 function executeCommand(wakeWord, commandText) {
   console.log(`Executing: ${wakeWord} - ${commandText}`);
   
-  // Clear timeout if exists
+  // Clear timeouts
   if (commandTimeout) clearTimeout(commandTimeout);
+  if (countdownInterval) clearInterval(countdownInterval);
   isWaitingForCommand = false;
+  elements.countdown.textContent = '';
   
-  // Reset UI state
+  // Reset UI state but keep listening
   elements.voiceStatus.classList.add('hotword-mode');
   elements.voiceStatus.classList.remove('recording-mode');
   elements.voiceDot.classList.remove('recording');
@@ -1026,10 +1069,10 @@ function executeCommand(wakeWord, commandText) {
   switch(wakeWord) {
     case 'clear':
       clearSearch();
-      updateVoiceStatus('Search cleared!');
+      updateVoiceStatus('Search cleared! Ready...');
       setTimeout(() => {
-        if (hotwordEnabled) updateVoiceStatus('Ready for command...');
-      }, 1500);
+        if (hotwordEnabled) updateVoiceStatus('Always listening...');
+      }, 2000);
       break;
       
     case 'search':
@@ -1041,8 +1084,12 @@ function executeCommand(wakeWord, commandText) {
         updateVoiceStatus(`Searching: ${commandText}`);
       } else {
         elements.input.focus();
-        updateVoiceStatus('What should I search for?');
+        updateVoiceStatus('What should I search?');
       }
+      // Return to always-listening after action
+      setTimeout(() => {
+        if (hotwordEnabled) updateVoiceStatus('Always listening...');
+      }, 3000);
       break;
       
     case 'open':
@@ -1057,8 +1104,8 @@ function executeCommand(wakeWord, commandText) {
         updateVoiceStatus('What site should I open?');
       }
       setTimeout(() => {
-        if (hotwordEnabled && !elements.input.value) updateVoiceStatus('Ready for command...');
-      }, 2000);
+        if (hotwordEnabled) updateVoiceStatus('Always listening...');
+      }, 3000);
       break;
       
     case 'play':
@@ -1071,6 +1118,9 @@ function executeCommand(wakeWord, commandText) {
       } else {
         updateVoiceStatus('What should I play?');
       }
+      setTimeout(() => {
+        if (hotwordEnabled) updateVoiceStatus('Always listening...');
+      }, 3000);
       break;
   }
 }
@@ -1079,6 +1129,8 @@ function cleanupVoiceState() {
   isListening = false;
   isWaitingForCommand = false;
   if (commandTimeout) clearTimeout(commandTimeout);
+  if (countdownInterval) clearInterval(countdownInterval);
+  elements.countdown.textContent = '';
   elements.voiceStatus.style.display = 'none';
   elements.voiceBtn.classList.remove('hotword-active', 'recording');
   elements.voiceStatus.classList.remove('hotword-mode', 'recording-mode');
@@ -1094,12 +1146,12 @@ function toggleHotwordMode() {
   if (hotwordEnabled) {
     stopHotword();
     hotwordEnabled = false;
-    elements.welcomeHint.innerHTML = 'Click 🎤 to enable voice commands<br><small style="opacity:0.7">Try: "Search dogs", "Open gmail", "Play music", "Clear"</small>';
+    elements.welcomeHint.innerHTML = 'Click 🎤 to activate voice • Always listening when ON<br><small style="opacity:0.7">Say: "Search...", "Open...", "Play...", or "Clear" • You have 10 seconds after wake word</small>';
   } else {
     hotwordEnabled = true;
     try {
       recognition.start();
-      elements.welcomeHint.innerHTML = '<b style="color:var(--hotword)">Voice active!</b> Say "Search...", "Open...", "Play...", or "Clear"';
+      elements.welcomeHint.innerHTML = '<b style="color:var(--hotword)">Voice ACTIVE!</b> Always listening • Click 🎤 again to stop';
     } catch (e) {
       console.error('Start failed:', e);
       hotwordEnabled = false;
