@@ -1,176 +1,1124 @@
 <!DOCTYPE html>
-<html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Yakin Search – Doğu AI</title>
+<title>Yakin Search </title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
 
 <style>
-
 :root{
-  --bg:#0b0e14;--card:#111827;--border:#374151;
-  --text:#e8eaed;--link:#8ab4f8;--url:#34d399;
-  --muted:#9ca3af;--accent:#8b5cf6;
+  --bg:#0b0e14;
+  --card:#111827;
+  --border:#374151;
+  --text:#e8eaed;
+  --link:#8ab4f8;
+  --url:#34d399;
+  --muted:#9ca3af;
+  --accent:#8b5cf6;
 }
-body{margin:0;font-family:system-ui;background:var(--bg);color:var(--text);}
-.logo-image{position:absolute;top:12px;left:12px;width:160px;border:2px solid var(--accent);cursor:pointer;}
-.yakin-bar{display:flex;align-items:center;gap:16px;margin:12px 16px;padding:12px}
-.yakin-logo{font-size:1.6rem;font-weight:500;}
-.search-bar{flex:1;max-width:650px;position:relative;}
-.search-input{width:100%;padding:10px 44px 10px 16px;border:1px solid var(--border);
-border-radius:24px;background:var(--card);color:var(--text);}
-.search-bar-icons{position:absolute;right:12px;top:50%;transform:translateY(-50%);
-display:flex;gap:8px;}
-.icon-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;}
-.result-card{background:var(--card);border:1px solid var(--border);border-radius:12px;
-padding:14px 18px;margin:10px 16px;}
-.result-title{font-size:1.1rem;color:var(--link);text-decoration:none;}
-.result-url{color:var(--url);font-size:.9rem;}
-.dogu-ai-header{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-.dogu-ai-icon{width:24px;height:24px;background:linear-gradient(135deg,#667eea,#764ba2);
-border-radius:50%;display:flex;align-items:center;justify-content:center;}
-.voice-status{position:fixed;top:20px;right:20px;background:#111827;padding:12px 16px;
-border-radius:12px;display:none;gap:10px;}
-.voice-dot{width:10px;height:10px;background:#ef4444;border-radius:50%;
-animation:pulse 1.5s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.6;}}
-.loading-spinner{border:3px solid #1f2937;border-top:3px solid #2563eb;
-border-radius:50%;width:24px;height:24px;animation:spin 1s linear infinite;margin:20px auto;}
-@keyframes spin{100%{transform:rotate(360deg);}}
+*{
+  box-sizing:border-box;
+}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.5;
+}
+
+header{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  height:60vh;
+  padding:20px;
+  transition:all .4s ease;
+}
+header.top-mode{
+  height:auto;
+  flex-direction:row;
+  justify-content:flex-start;
+  padding:12px 16px;
+  border-bottom:1px solid var(--border);
+}
+
+.logo-image{
+  position:absolute;
+  top:12px;
+  left:12px;
+  width:40px;
+  height:40px;
+  cursor:pointer;
+  z-index:10;
+}
+header.top-mode .logo-image{
+  position:static;
+  width:32px;
+  height:32px;
+  margin-right:12px;
+}
+
+.yakin-logo{
+  font-size:2.5rem;
+  font-weight:600;
+  margin-bottom:24px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+header.top-mode .yakin-logo{
+  font-size:1.4rem;
+  margin-bottom:0;
+  margin-right:16px;
+}
+
+.search-box{
+  position:relative;
+  width:100%;
+  max-width:650px;
+  display:flex;
+  gap:8px;
+}
+.search-input{
+  flex:1;
+  padding:12px 48px 12px 20px;
+  border:1px solid var(--border);
+  border-radius:24px;
+  background:var(--card);
+  color:var(--text);
+  font-size:1rem;
+  outline:none;
+  transition:border-color .2s;
+}
+.search-input:focus{
+  border-color:var(--accent);
+}
+.search-btns{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  gap:6px;
+}
+.icon-btn{
+  background:none;
+  border:none;
+  color:var(--muted);
+  cursor:pointer;
+  font-size:1.2rem;
+  padding:4px;
+  border-radius:50%;
+  transition:all .2s;
+}
+.icon-btn:hover{
+  color:var(--text);
+  background:rgba(139,92,246,0.1);
+}
+.icon-btn.active{
+  color:var(--accent);
+}
+
+/* Tabs */
+.tabs{
+  display:none;
+  gap:6px;
+  margin:0 16px 12px;
+  border-bottom:1px solid var(--border);
+  overflow-x:auto;
+}
+.tabs.visible{
+  display:flex;
+}
+.tab{
+  padding:8px 16px;
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  color:var(--muted);
+  font-size:.9rem;
+  white-space:nowrap;
+  transition:all .2s;
+}
+.tab:hover{
+  color:var(--text);
+}
+.tab.active{
+  color:var(--accent);
+  border-color:var(--accent);
+}
+
+/* Results */
+#results{
+  max-width:800px;
+  margin:0 auto;
+  padding:20px 16px;
+}
+
+.result-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px 20px;
+  margin-bottom:12px;
+  transition:transform .2s,background .2s;
+}
+.result-card:hover{
+  background:#1a2332;
+  transform:translateY(-1px);
+}
+.result-title{
+  font-size:1.1rem;
+  color:var(--link);
+  text-decoration:none;
+  display:block;
+  margin-bottom:4px;
+  font-weight:500;
+}
+.result-title:hover{
+  text-decoration:underline;
+}
+.result-title:visited{
+  color:#c58af9;
+}
+.result-url{
+  color:var(--url);
+  font-size:.9rem;
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.result-favicon{
+  width:16px;
+  height:16px;
+}
+.result-snippet{
+  color:var(--muted);
+  font-size:.95rem;
+  line-height:1.5;
+}
+
+/* AI Summary */
+.dogu-ai-response{
+  border-left:4px solid var(--accent);
+  padding-left:16px;
+  margin:16px 0;
+}
+.dogu-ai-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+}
+.dogu-ai-icon{
+  width:32px;
+  height:32px;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1rem;
+  box-shadow:0 2px 8px rgba(102,126,234,0.3);
+}
+
+/* Voice Status */
+.voice-status{
+  position:fixed;
+  top:20px;
+  right:20px;
+  background:var(--card);
+  padding:12px 20px;
+  border-radius:12px;
+  display:none;
+  align-items:center;
+  gap:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,.5);
+  z-index:1000;
+  border:1px solid var(--border);
+}
+.voice-dot{
+  width:10px;
+  height:10px;
+  background:#ef4444;
+  border-radius:50%;
+  animation:pulse 1.5s infinite;
+}
+@keyframes pulse{
+  0%,100%{opacity:1;}
+  50%{opacity:.3;}
+}
+.voice-text{
+  font-size:.9rem;
+  font-weight:500;
+}
+
+/* Loading */
+.loading-spinner{
+  border:3px solid #1f2937;
+  border-top:3px solid var(--accent);
+  border-radius:50%;
+  width:32px;
+  height:32px;
+  animation:spin 1s linear infinite;
+  margin:40px auto;
+}
+@keyframes spin{
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+
+/* Pagination */
+.pagination{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  align-items:center;
+  margin:32px 0;
+}
+.page-btn{
+  padding:8px 16px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  border-radius:8px;
+  cursor:pointer;
+  font-size:.9rem;
+  transition:all .2s;
+}
+.page-btn:hover:not(:disabled){
+  border-color:var(--accent);
+  background:rgba(139,92,246,0.1);
+}
+.page-btn:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+/* Music */
+.music-options{
+  display:flex;
+  gap:10px;
+  margin-top:16px;
+  flex-wrap:wrap;
+}
+.music-btn{
+  padding:8px 16px;
+  background:var(--border);
+  border:1px solid transparent;
+  border-radius:20px;
+  font-size:.9rem;
+  cursor:pointer;
+  color:var(--text);
+  transition:all .2s;
+}
+.music-btn:hover{
+  background:#4b5563;
+  border-color:var(--accent);
+}
+
+/* History */
+.history-item{
+  padding:8px 12px;
+  margin:4px 0;
+  background:rgba(139,92,246,0.1);
+  border-radius:6px;
+  cursor:pointer;
+  font-size:.9rem;
+  transition:background .2s;
+}
+.history-item:hover{
+  background:rgba(139,92,246,0.2);
+}
+
+/* File Modal */
+.service-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.8);
+  backdrop-filter:blur(4px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:2000;
+  padding:20px;
+}
+.modal-content{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:24px;
+  max-width:600px;
+  width:100%;
+  max-height:80vh;
+  overflow-y:auto;
+}
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+.modal-close{
+  background:none;
+  border:none;
+  color:var(--muted);
+  font-size:1.8rem;
+  cursor:pointer;
+  line-height:1;
+}
+.modal-close:hover{
+  color:var(--text);
+}
+.file-upload-area{
+  border:2px dashed var(--border);
+  border-radius:12px;
+  padding:40px 20px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .2s;
+  margin-bottom:20px;
+}
+.file-upload-area:hover,.file-upload-area.dragover{
+  border-color:var(--accent);
+  background:rgba(139,92,246,0.05);
+}
+.upload-icon{
+  font-size:3rem;
+  margin-bottom:12px;
+}
+.file-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 14px;
+  background:#1f2937;
+  border-radius:8px;
+  margin-bottom:8px;
+  gap:10px;
+}
+.file-name{
+  flex:1;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:.9rem;
+}
+.file-size{
+  font-size:.8rem;
+  color:var(--muted);
+}
+.file-action-btn{
+  background:none;
+  border:none;
+  color:var(--muted);
+  cursor:pointer;
+  font-size:1rem;
+  padding:4px;
+  border-radius:4px;
+}
+.file-action-btn:hover{
+  color:var(--accent);
+  background:rgba(139,92,246,0.1);
+}
+.file-services{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:12px;
+  margin-top:16px;
+}
+.file-service{
+  background:#1f2937;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px 12px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .2s;
+}
+.file-service:hover{
+  background:#374151;
+  transform:translateY(-2px);
+  border-color:var(--accent);
+}
+.file-service-icon{
+  font-size:1.8rem;
+  margin-bottom:8px;
+}
+.file-service-name{
+  font-size:.9rem;
+  font-weight:600;
+  margin-bottom:4px;
+}
+.file-service-desc{
+  font-size:.75rem;
+  color:var(--muted);
+}
+.note{
+  color:var(--muted);
+  font-size:.85rem;
+  margin-top:8px;
+}
+
+/* Embed Box */
+#embedBox{
+  margin-top:16px;
+  border-radius:12px;
+  overflow:hidden;
+  border:1px solid var(--border);
+}
+
+/* Responsive */
+@media(max-width:768px){
+  header{
+    height:50vh;
+    padding:16px;
+  }
+  .yakin-logo{
+    font-size:1.8rem;
+  }
+  .search-box{
+    max-width:100%;
+  }
+  #results{
+    padding:16px 12px;
+  }
+  .file-services{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
 </style>
 </head>
 
 <body>
+<!-- Logo -->
+<img id="logoImage" class="logo-image" src="logo.jpg" alt="Yakin" title="Yakin Search" onclick="resetSearch()">
 
-<img id="logoImage" class="logo-image" src="logo.jpg">
-
-<div class="yakin-bar">
+<!-- Header -->
+<header id="mainHeader">
   <div class="yakin-logo">🚀 Yakin Search</div>
-  <div class="search-bar">
-    <input id="q" class="search-input" placeholder="Search with voice or text...">
-    <div class="search-bar-icons">
-      <button class="icon-btn text-search">🔍</button>
-      <button class="icon-btn dogu-ai">✨</button>
-      <button class="icon-btn voice-search">🎤</button>
-      <button class="icon-btn file-search">📁</button>
+  <div class="search-box">
+    <input id="searchInput" class="search-input" placeholder="Search the web or say 'play [song]'..." autocomplete="off">
+    <div class="search-btns">
+      <button class="icon-btn" id="textSearchBtn" title="Search">🔍</button>
+      <button class="icon-btn" id="doguAiBtn" title="AI Mode">✨</button>
+      <button class="icon-btn" id="voiceBtn" title="Voice Search">🎤</button>
+      <button class="icon-btn" id="fileBtn" title="File Search">📁</button>
+    </div>
+  </div>
+</header>
+
+<!-- Tabs -->
+<div class="tabs" id="tabs">
+  <div class="tab active" data-type="web">All</div>
+  <div class="tab" data-type="images">Images</div>
+  <div class="tab" data-type="videos">Videos</div>
+  <div class="tab" data-type="news">News</div>
+</div>
+
+<!-- Voice Status -->
+<div class="voice-status" id="voiceStatus">
+  <div class="voice-dot"></div>
+  <div class="voice-text">Listening...</div>
+</div>
+
+<!-- Results -->
+<div id="results"></div>
+
+<!-- File Modal -->
+<div class="service-modal" id="fileModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 style="margin:0">File Services</h3>
+      <button class="modal-close" onclick="closeFileModal()">×</button>
+    </div>
+    
+    <div class="file-upload-area" id="uploadArea">
+      <div class="upload-icon">📁</div>
+      <p>Drag & drop files here or click to browse</p>
+      <p class="note">Supports images, documents, audio, and video files</p>
+      <input type="file" id="fileInput" multiple style="display:none">
+    </div>
+    
+    <div id="fileList"></div>
+    
+    <div class="file-services">
+      <div class="file-service" onclick="searchOnService('googleDrive')">
+        <div class="file-service-icon">📁</div>
+        <div class="file-service-name">Google Drive</div>
+        <div class="file-service-desc">Cloud storage</div>
+      </div>
+      <div class="file-service" onclick="searchOnService('dropbox')">
+        <div class="file-service-icon">📦</div>
+        <div class="file-service-name">Dropbox</div>
+        <div class="file-service-desc">File sharing</div>
+      </div>
+      <div class="file-service" onclick="searchOnService('onedrive')">
+        <div class="file-service-icon">☁️</div>
+        <div class="file-service-name">OneDrive</div>
+        <div class="file-service-desc">Microsoft cloud</div>
+      </div>
+      <div class="file-service" onclick="searchOnService('icloud')">
+        <div class="file-service-icon">🍎</div>
+        <div class="file-service-name">iCloud</div>
+        <div class="file-service-desc">Apple cloud</div>
+      </div>
+      <div class="file-service" onclick="openService('wetransfer')">
+        <div class="file-service-icon">📤</div>
+        <div class="file-service-name">WeTransfer</div>
+        <div class="file-service-desc">File transfer</div>
+      </div>
+      <div class="file-service" onclick="openService('github')">
+        <div class="file-service-icon">💻</div>
+        <div class="file-service-name">GitHub</div>
+        <div class="file-service-desc">Code files</div>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="voice-status" id="voiceStatus">
-  <div class="voice-dot"></div>
-  <div class="voice-text">Listening for "Yakin"</div>
-</div>
-
-<div id="results"></div>
-
 <script>
+// Configuration - Replace with your actual API keys
+const CONFIG = {
+  GOOGLE_API_KEY: '',
+  GOOGLE_CX: '',
+  YOUTUBE_API_KEY: ''  // Required for music auto-play feature
+};
 
-const GOOGLE_API_KEY = '';   
-const GOOGLE_CX = '';       
+// State
+let doguAiMode = false;
+let currentTab = 'web';
+let currentPage = 1;
+let lastQuery = '';
+let isListening = false;
+let recognition = null;
+let searchHistory = JSON.parse(localStorage.getItem('yakinHistory')) || [];
+let uploadedFiles = JSON.parse(localStorage.getItem('yakinFiles')) || [];
 
-const input = document.getElementById('q');
-const results = document.getElementById('results');
-const voiceBtn = document.querySelector('.voice-search');
-const voiceStatus = document.getElementById('voiceStatus');
+// DOM Elements
+const elements = {
+  input: document.getElementById('searchInput'),
+  results: document.getElementById('results'),
+  header: document.getElementById('mainHeader'),
+  tabs: document.getElementById('tabs'),
+  voiceStatus: document.getElementById('voiceStatus'),
+  fileModal: document.getElementById('fileModal'),
+  uploadArea: document.getElementById('uploadArea'),
+  fileInput: document.getElementById('fileInput'),
+  fileList: document.getElementById('fileList'),
+  voiceBtn: document.getElementById('voiceBtn'),
+  doguAiBtn: document.getElementById('doguAiBtn'),
+  fileBtn: document.getElementById('fileBtn'),
+  textSearchBtn: document.getElementById('textSearchBtn')
+};
 
-
-function generateAISummary(query, items) {
-  if (!items || !items.length) return '';
-  const text = items.map(i => i.snippet).join(' ');
-  const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [];
-  const important = sentences.filter(s => s.length > 60).slice(0, 5);
-
-  return `
-  <div class="result-card">
-    <div class="dogu-ai-header">
-      <div class="dogu-ai-icon">✨</div>
-      <b>Doğu AI Summary</b>
-    </div>
-    ${important.map(s=>`• ${s.trim()}`).join('<br>')}
-  </div>`;
-}
-
-
-async function yakinSearch(q){
-  results.innerHTML = '<div class="loading-spinner"></div>';
-  const url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(q)}&key=${GOOGLE_API_KEY}&cx=${GOOGLE_CX}`;
-  const res = await fetch(url);
-  const data = await res.json();
-  const items = data.items || [];
-
-  let html = generateAISummary(q, items);
-
-  items.forEach(r=>{
-    html+=`
-    <div class="result-card">
-      <a class="result-title" href="${r.link}" target="_blank">${r.title}</a>
-      <div class="result-url">${r.link}</div>
-      <div>${r.snippet}</div>
-    </div>`;
+// Initialize
+function init() {
+  elements.input.focus();
+  renderHistory();
+  
+  // Event Listeners
+  elements.input.addEventListener('keydown', handleInputKeydown);
+  elements.textSearchBtn.addEventListener('click', () => handleSearch(elements.input.value));
+  elements.doguAiBtn.addEventListener('click', toggleAiMode);
+  elements.voiceBtn.addEventListener('click', toggleVoice);
+  elements.fileBtn.addEventListener('click', openFileModal);
+  
+  // File upload
+  elements.uploadArea.addEventListener('click', () => elements.fileInput.click());
+  elements.uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    elements.uploadArea.classList.add('dragover');
   });
-
-  results.innerHTML = html || '<div class="result-card">No results</div>';
+  elements.uploadArea.addEventListener('dragleave', () => {
+    elements.uploadArea.classList.remove('dragover');
+  });
+  elements.uploadArea.addEventListener('drop', handleFileDrop);
+  elements.fileInput.addEventListener('change', handleFileSelect);
+  
+  // Tabs
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => switchTab(tab.dataset.type));
+  });
+  
+  // Initialize speech recognition
+  initSpeechRecognition();
 }
 
-
-function handle(q){
-  if(!q) return;
-  if(q.toLowerCase().startsWith("open ")){
-    window.open("https://"+q.replace("open ",""),"_blank");
+// Search Functions
+async function handleSearch(query) {
+  const q = query.trim();
+  if (!q) return;
+  
+  addToHistory(q);
+  elements.header.classList.add('top-mode');
+  elements.tabs.classList.add('visible');
+  
+  // Handle special commands
+  const lower = q.toLowerCase();
+  
+  if (lower.startsWith('play ')) {
+    handleMusicQuery(q);
     return;
   }
-  yakinSearch(q);
+  
+  if (lower.startsWith('open ')) {
+    const site = q.replace(/^open\s+/i, '').replace(/\s+/g, '');
+    window.open(`https://${site}.com`, '_blank');
+    showMessage(`Opening ${site}.com...`);
+    return;
+  }
+  
+  if (lower.includes('gmail') || lower.includes('email')) {
+    window.open('https://mail.google.com', '_blank');
+    showMessage('Opening Gmail...');
+    return;
+  }
+  
+  // Default web search
+  yakinSearch(q, currentTab, 1);
 }
 
+async function yakinSearch(query, type = 'web', page = 1) {
+  lastQuery = query;
+  currentPage = page;
+  elements.results.innerHTML = '<div class="loading-spinner"></div>';
+  
+  if (!CONFIG.GOOGLE_API_KEY || !CONFIG.GOOGLE_CX) {
+    showError('Please configure Google API Key and CX in the code.');
+    return;
+  }
+  
+  const start = (page - 1) * 10 + 1;
+  const url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${CONFIG.GOOGLE_API_KEY}&cx=${CONFIG.GOOGLE_CX}&start=${start}&num=10`;
+  
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    
+    if (data.error) {
+      showError(`API Error: ${data.error.message}`);
+      return;
+    }
+    
+    const items = data.items || [];
+    displayResults(items, query, page);
+    
+  } catch (e) {
+    console.error(e);
+    showError('Search failed. Please check your internet connection.');
+  }
+}
 
-let recognition;
-let isListening=false;
+function displayResults(items, query, page) {
+  if (items.length === 0) {
+    elements.results.innerHTML = '<div class="result-card">No results found.</div>';
+    return;
+  }
+  
+  let html = '';
+  
+  // AI Summary (if enabled)
+  if (doguAiMode && items.length > 0) {
+    html += generateAISummary(items);
+  }
+  
+  // Results
+  items.forEach(item => {
+    try {
+      const domain = new URL(item.link).hostname;
+      html += `
+        <div class="result-card">
+          <a class="result-title" href="${item.link}" target="_blank" rel="noopener">
+            ${item.title}
+          </a>
+          <div class="result-url">
+            <img class="result-favicon" src="https://www.google.com/s2/favicons?domain=${domain}" alt="" width="16" height="16">
+            ${domain}
+          </div>
+          <div class="result-snippet">${item.snippet || ''}</div>
+        </div>`;
+    } catch (e) {
+      // Skip invalid URLs
+    }
+  });
+  
+  // Pagination
+  html += `
+    <div class="pagination">
+      <button class="page-btn" onclick="yakinSearch('${escapeHtml(query)}','${currentTab}',${page-1})" ${page===1?'disabled':''}>‹ Prev</button>
+      <span style="color:var(--muted);font-size:.9rem;">Page ${page}</span>
+      <button class="page-btn" onclick="yakinSearch('${escapeHtml(query)}','${currentTab}',${page+1})">Next ›</button>
+    </div>`;
+  
+  elements.results.innerHTML = html;
+}
 
-if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SR();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.lang = 'en-US';
+function generateAISummary(items) {
+  const snippets = items.map(i => i.snippet).filter(s => s).join(' ');
+  const sentences = (snippets.match(/[^\.!\?]+[\.!\?]+/g) || [])
+    .filter(s => s.length > 50)
+    .slice(0, 3);
+  
+  if (sentences.length === 0) return '';
+  
+  return `
+    <div class="result-card dogu-ai-response">
+      <div class="dogu-ai-header">
+        <div class="dogu-ai-icon">✨</div>
+        <b>Doğu AI Summary</b>
+      </div>
+      <div class="result-snippet">
+        ${sentences.map(s => `• ${s.trim()}`).join('<br>')}
+      </div>
+    </div>`;
+}
 
-  recognition.onstart=()=>{
-    isListening=true;
-    voiceStatus.style.display="flex";
-  };
+// Music
+function handleMusicQuery(query) {
+  const musicData = parseMusicQuery(query);
+  
+  elements.results.innerHTML = `
+    <div class="result-card">
+      <div class="dogu-ai-header">
+        <div class="dogu-ai-icon">🎵</div>
+        <b>Play: ${escapeHtml(musicData.fullQuery)}</b>
+      </div>
+      ${musicData.artist ? `<p class="note">Artist: ${escapeHtml(musicData.artist)}</p>` : ''}
+      <div class="music-options">
+        <button class="music-btn" onclick="playYouTube('${escapeHtml(musicData.fullQuery)}')">YouTube</button>
+        <button class="music-btn" onclick="playSpotify('${escapeHtml(musicData.fullQuery)}')">Spotify</button>
+        <button class="music-btn" onclick="playYouTubeMusic('${escapeHtml(musicData.fullQuery)}')">YouTube Music</button>
+      </div>
+      ${CONFIG.YOUTUBE_API_KEY ? `<p class="note">Auto-playing preview below...</p><div id="embedBox"></div>` : ''}
+    </div>`;
+  
+  if (CONFIG.YOUTUBE_API_KEY) {
+    setTimeout(() => playYouTube(musicData.fullQuery), 500);
+  }
+}
 
-  recognition.onresult=(e)=>{
-    const transcript = Array.from(e.results)
-      .map(r=>r[0].transcript).join(' ').toLowerCase();
+function parseMusicQuery(query) {
+  const patterns = [
+    /play\s+"(.+?)"\s+by\s+(.+)/i,
+    /play\s+(.+?)\s+by\s+(.+)/i,
+    /play\s+(.+)/i
+  ];
+  
+  for (const pattern of patterns) {
+    const match = query.match(pattern);
+    if (match) {
+      return {
+        song: match[1].trim(),
+        artist: match[2] ? match[2].trim() : '',
+        fullQuery: match[2] ? `${match[1].trim()} ${match[2].trim()}` : match[1].trim()
+      };
+    }
+  }
+  return { song: query.replace(/^play\s+/i, '').trim(), artist: '', fullQuery: query.replace(/^play\s+/i, '').trim() };
+}
 
-    if(transcript.includes("yakin")){
-      const cmd = transcript.replace(/.*yakin/i,'').trim();
-      if(cmd){
-        input.value=cmd;
-        handle(cmd);
+async function playYouTube(query) {
+  if (!CONFIG.YOUTUBE_API_KEY) {
+    window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`, '_blank');
+    return;
+  }
+  
+  try {
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(query)}&key=${CONFIG.YOUTUBE_API_KEY}&maxResults=1`);
+    const data = await res.json();
+    
+    if (data.items?.length > 0) {
+      const embedBox = document.getElementById('embedBox');
+      if (embedBox) {
+        embedBox.innerHTML = `<iframe src="https://www.youtube.com/embed/${data.items[0].id.videoId}?autoplay=1" width="100%" height="300" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
       }
     }
-  };
-
-  recognition.onend=()=>recognition.start();
+  } catch (e) {
+    console.error('YouTube API error:', e);
+  }
 }
 
-document.querySelector('.text-search').onclick=()=>handle(input.value);
-document.querySelector('.dogu-ai').onclick=()=>handle(input.value);
-document.querySelector('.voice-search').onclick=()=>{
-  if(!isListening) recognition.start();
-};
-document.querySelector('.file-search').onclick=()=>{
-  alert("File modal (your existing one)");
-};
-document.getElementById("logoImage").onclick=()=>{
-  input.value="";
-  results.innerHTML="";
-};
+function playSpotify(query) {
+  window.open(`https://open.spotify.com/search/${encodeURIComponent(query)}`, '_blank');
+}
 
-input.addEventListener("keydown",e=>{
-  if(e.key==="Enter") handle(input.value);
+function playYouTubeMusic(query) {
+  window.open(`https://music.youtube.com/search?q=${encodeURIComponent(query)}`, '_blank');
+}
+
+// Voice Recognition
+function initSpeechRecognition() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    elements.voiceBtn.style.display = 'none';
+    return;
+  }
+  
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = 'en-US';
+  
+  recognition.onstart = () => {
+    isListening = true;
+    elements.voiceStatus.style.display = 'flex';
+    elements.input.placeholder = 'Listening...';
+  };
+  
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    elements.input.value = transcript;
+    handleSearch(transcript);
+  };
+  
+  recognition.onerror = () => {
+    stopListening();
+  };
+  
+  recognition.onend = () => {
+    stopListening();
+  };
+}
+
+function toggleVoice() {
+  if (!recognition) return;
+  if (isListening) {
+    recognition.stop();
+  } else {
+    recognition.start();
+  }
+}
+
+function stopListening() {
+  isListening = false;
+  elements.voiceStatus.style.display = 'none';
+  elements.input.placeholder = doguAiMode ? 'Ask Doğu AI anything...' : 'Search the web...';
+}
+
+// File Handling
+function openFileModal() {
+  elements.fileModal.style.display = 'flex';
+  renderFileList();
+}
+
+function closeFileModal() {
+  elements.fileModal.style.display = 'none';
+}
+
+function handleFileDrop(e) {
+  e.preventDefault();
+  elements.uploadArea.classList.remove('dragover');
+  processFiles(Array.from(e.dataTransfer.files));
+}
+
+function handleFileSelect(e) {
+  processFiles(Array.from(e.target.files));
+  e.target.value = '';
+}
+
+function processFiles(files) {
+  files.forEach(file => {
+    const fileData = {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      lastModified: file.lastModified,
+      preview: URL.createObjectURL(file),
+      id: Date.now() + Math.random().toString(36).substr(2, 9)
+    };
+    
+    uploadedFiles.unshift(fileData);
+    if (uploadedFiles.length > 10) uploadedFiles.pop();
+  });
+  
+  localStorage.setItem('yakinFiles', JSON.stringify(uploadedFiles));
+  renderFileList();
+  showMessage(`Uploaded ${files.length} file(s) successfully.`);
+}
+
+function renderFileList() {
+  if (uploadedFiles.length === 0) {
+    elements.fileList.innerHTML = '<p class="note" style="text-align:center">No files uploaded yet</p>';
+    return;
+  }
+  
+  elements.fileList.innerHTML = uploadedFiles.slice(0, 5).map(file => `
+    <div class="file-item">
+      <span class="file-name">📄 ${escapeHtml(file.name)}</span>
+      <span class="file-size">${formatFileSize(file.size)}</span>
+      <button class="file-action-btn" onclick="window.open('${file.preview}', '_blank')" title="Open">👁️</button>
+      <button class="file-action-btn" onclick="removeFile('${file.id}')" title="Remove">🗑️</button>
+    </div>
+  `).join('');
+}
+
+function removeFile(id) {
+  uploadedFiles = uploadedFiles.filter(f => f.id !== id);
+  localStorage.setItem('yakinFiles', JSON.stringify(uploadedFiles));
+  renderFileList();
+}
+
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+function searchOnService(service) {
+  const query = elements.input.value.trim();
+  const serviceQueries = {
+    googleDrive: 'site:drive.google.com',
+    dropbox: 'site:dropbox.com',
+    onedrive: 'site:onedrive.live.com',
+    icloud: 'site:icloud.com'
+  };
+  
+  if (query && serviceQueries[service]) {
+    yakinSearch(`${serviceQueries[service]} ${query}`, 'web', 1);
+  } else {
+    openService(service);
+  }
+  closeFileModal();
+}
+
+function openService(service) {
+  const urls = {
+    wetransfer: 'https://wetransfer.com',
+    github: 'https://github.com',
+    googledrive: 'https://drive.google.com',
+    dropbox: 'https://dropbox.com',
+    onedrive: 'https://onedrive.live.com',
+    icloud: 'https://icloud.com'
+  };
+  window.open(urls[service] || `https://${service}.com`, '_blank');
+}
+
+// History & UI
+function addToHistory(q) {
+  if (!q.trim()) return;
+  searchHistory = searchHistory.filter(item => item.toLowerCase() !== q.toLowerCase());
+  searchHistory.unshift(q);
+  searchHistory = searchHistory.slice(0, 10);
+  localStorage.setItem('yakinHistory', JSON.stringify(searchHistory));
+}
+
+function renderHistory() {
+  if (searchHistory.length === 0 && uploadedFiles.length === 0) {
+    showWelcome();
+    return;
+  }
+  
+  let html = '';
+  
+  if (uploadedFiles.length > 0) {
+    html += `
+      <div class="result-card">
+        <b>📁 Recent Files</b>
+        ${uploadedFiles.slice(0, 3).map(f => `
+          <div class="file-item" style="margin-top:8px;cursor:pointer" onclick="window.open('${f.preview}', '_blank')">
+            <span class="file-name">📄 ${escapeHtml(f.name)}</span>
+            <span class="file-size">${formatFileSize(f.size)}</span>
+          </div>`).join('')}
+      </div>`;
+  }
+  
+  if (searchHistory.length > 0) {
+    html += `
+      <div class="result-card">
+        <b>🕐 Recent Searches</b>
+        ${searchHistory.map(item => `
+          <div class="history-item" onclick="elements.input.value='${escapeHtml(item)}'; handleSearch('${escapeHtml(item)}')">
+            ${escapeHtml(item)}
+          </div>`).join('')}
+      </div>`;
+  }
+  
+  elements.results.innerHTML = html;
+}
+
+function showWelcome() {
+  elements.results.innerHTML = `
+    <div class="result-card">
+      <div class="dogu-ai-header">
+        <div class="dogu-ai-icon">🚀</div>
+        <b>Welcome to Yakin Search</b>
+      </div>
+      <p style="color:var(--muted)">Try these commands:</p>
+      <ul style="color:var(--muted);padding-left:20px">
+        <li>Type any query to search the web</li>
+        <li>Say <b>"play [song name]"</b> for music</li>
+        <li>Say <b>"open gmail"</b> to open sites</li>
+        <li>Click ✨ for AI summaries</li>
+        <li>Drag files to upload (stored locally)</li>
+      </ul>
+      <p class="note" style="margin-top:16px">💡 Tip: Press <kbd>/</kbd> to focus search, <kbd>Ctrl+K</kbd> for files</p>
+    </div>`;
+}
+
+function switchTab(type) {
+  currentTab = type;
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.type === type);
+  });
+  if (lastQuery) yakinSearch(lastQuery, type, 1);
+}
+
+function toggleAiMode() {
+  doguAiMode = !doguAiMode;
+  elements.doguAiBtn.classList.toggle('active', doguAiMode);
+  elements.input.placeholder = doguAiMode ? 'Ask Doğu AI anything...' : 'Search the web...';
+  elements.input.focus();
+}
+
+function handleInputKeydown(e) {
+  if (e.key === 'Enter') {
+    handleSearch(elements.input.value);
+  } else if (e.key === '/' && document.activeElement !== elements.input) {
+    e.preventDefault();
+    elements.input.focus();
+    elements.input.select();
+  } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    openFileModal();
+  } else if (e.key === 'Escape') {
+    if (isListening && recognition) recognition.stop();
+    elements.input.blur();
+  }
+}
+
+function resetSearch() {
+  elements.input.value = '';
+  elements.header.classList.remove('top-mode');
+  elements.tabs.classList.remove('visible');
+  renderHistory();
+}
+
+function showMessage(msg) {
+  elements.results.innerHTML = `<div class="result-card">${escapeHtml(msg)}</div>`;
+}
+
+function showError(msg) {
+  elements.results.innerHTML = `<div class="result-card" style="border-left:4px solid #ef4444">${escapeHtml(msg)}</div>`;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Close modal on outside click
+elements.fileModal.addEventListener('click', (e) => {
+  if (e.target === elements.fileModal) closeFileModal();
 });
+
+// Start
+init();
 </script>
 </body>
 </html>
