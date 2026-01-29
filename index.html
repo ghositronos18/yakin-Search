@@ -16,6 +16,7 @@
   --url:#34d399;
   --muted:#9ca3af;
   --accent:#8b5cf6;
+  --hotword:#f59e0b;
 }
 *{
   box-sizing:border-box;
@@ -30,7 +31,6 @@ body{
   min-height:100vh;
 }
 
-/* Centered Header (Google Style) */
 header{
   display:flex;
   flex-direction:column;
@@ -41,8 +41,6 @@ header{
   transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position:relative;
 }
-
-/* Top Bar Mode (After Search) */
 header.top-mode{
   min-height:auto;
   flex-direction:row;
@@ -56,7 +54,6 @@ header.top-mode{
   gap:16px;
 }
 
-/* Logo Styles */
 .yakin-logo{
   font-size:4rem;
   font-weight:600;
@@ -67,26 +64,22 @@ header.top-mode{
   transition:all 0.4s ease;
   text-align:center;
 }
-
 header.top-mode .yakin-logo{
   font-size:1.5rem;
   margin-bottom:0;
   margin-right:8px;
 }
 
-/* Search Container */
 .search-container{
   width:100%;
   max-width:584px;
   position:relative;
   transition:all 0.4s ease;
 }
-
 header.top-mode .search-container{
   max-width:692px;
 }
 
-/* Search Box Wrapper */
 .search-box{
   position:relative;
   width:100%;
@@ -99,7 +92,6 @@ header.top-mode .search-container{
   box-shadow:0 1px 6px rgba(0,0,0,0.3);
   transition:all 0.2s ease;
 }
-
 .search-box:hover,
 .search-box:focus-within{
   background:#1f2937;
@@ -107,7 +99,6 @@ header.top-mode .search-container{
   border-color:var(--accent);
 }
 
-/* Search Input */
 .search-input{
   flex:1;
   background:transparent;
@@ -118,12 +109,10 @@ header.top-mode .search-container{
   outline:none;
   width:100%;
 }
-
 .search-input::placeholder{
   color:var(--muted);
 }
 
-/* Search Buttons */
 .search-btns{
   display:flex;
   gap:8px;
@@ -144,20 +133,27 @@ header.top-mode .search-container{
   justify-content:center;
   width:36px;
   height:36px;
+  position:relative;
 }
-
 .icon-btn:hover{
   background:rgba(139,92,246,0.1);
   color:var(--text);
   transform:scale(1.05);
 }
-
 .icon-btn.active{
   color:var(--accent);
   background:rgba(139,92,246,0.2);
 }
+.icon-btn.hotword-active{
+  color:var(--hotword);
+  background:rgba(245,158,11,0.15);
+  animation:pulse-border 2s infinite;
+}
+@keyframes pulse-border{
+  0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0.4);}
+  50%{box-shadow:0 0 0 8px rgba(245,158,11,0);}
+}
 
-/* Main Action Buttons (Centered below search) */
 .action-buttons{
   display:flex;
   gap:12px;
@@ -166,11 +162,9 @@ header.top-mode .search-container{
   opacity:1;
   transition:opacity 0.3s;
 }
-
 header.top-mode .action-buttons{
   display:none;
 }
-
 .action-btn{
   background:var(--card);
   border:1px solid var(--border);
@@ -181,14 +175,12 @@ header.top-mode .action-buttons{
   font-size:14px;
   transition:all 0.2s;
 }
-
 .action-btn:hover{
   border-color:var(--accent);
   background:#1f2937;
   box-shadow:0 1px 2px rgba(0,0,0,0.2);
 }
 
-/* Tabs */
 .tabs{
   display:none;
   gap:8px;
@@ -199,11 +191,9 @@ header.top-mode .action-buttons{
   top:73px;
   z-index:99;
 }
-
 .tabs.visible{
   display:flex;
 }
-
 .tab{
   padding:8px 16px;
   cursor:pointer;
@@ -213,17 +203,14 @@ header.top-mode .action-buttons{
   transition:all 0.2s;
   position:relative;
 }
-
 .tab:hover{
   color:var(--text);
   background:rgba(139,92,246,0.1);
 }
-
 .tab.active{
   color:var(--accent);
   background:rgba(139,92,246,0.15);
 }
-
 .tab.active::after{
   content:'';
   position:absolute;
@@ -234,7 +221,6 @@ header.top-mode .action-buttons{
   background:var(--accent);
 }
 
-/* Results */
 #results{
   max-width:800px;
   margin:24px auto;
@@ -242,7 +228,6 @@ header.top-mode .action-buttons{
   min-height:50vh;
 }
 
-/* Result Cards */
 .result-card{
   background:var(--card);
   border:1px solid var(--border);
@@ -251,13 +236,11 @@ header.top-mode .action-buttons{
   margin-bottom:16px;
   transition:transform 0.2s,background 0.2s;
 }
-
 .result-card:hover{
   background:#1a2332;
   transform:translateY(-1px);
   border-color:#4b5563;
 }
-
 .result-title{
   font-size:1.1rem;
   color:var(--link);
@@ -266,15 +249,12 @@ header.top-mode .action-buttons{
   margin-bottom:6px;
   font-weight:500;
 }
-
 .result-title:hover{
   text-decoration:underline;
 }
-
 .result-title:visited{
   color:#c58af9;
 }
-
 .result-url{
   color:var(--url);
   font-size:0.9rem;
@@ -283,32 +263,27 @@ header.top-mode .action-buttons{
   align-items:center;
   gap:8px;
 }
-
 .result-favicon{
   width:16px;
   height:16px;
   border-radius:2px;
 }
-
 .result-snippet{
   color:var(--muted);
   font-size:0.95rem;
   line-height:1.6;
 }
 
-/* AI Summary */
 .dogu-ai-response{
   border-left:3px solid var(--accent);
   background:linear-gradient(90deg, rgba(139,92,246,0.1) 0%, transparent 100%);
 }
-
 .dogu-ai-header{
   display:flex;
   align-items:center;
   gap:10px;
   margin-bottom:12px;
 }
-
 .dogu-ai-icon{
   width:28px;
   height:28px;
@@ -321,7 +296,7 @@ header.top-mode .action-buttons{
   box-shadow:0 2px 8px rgba(102,126,234,0.3);
 }
 
-/* Voice Status */
+/* Voice Status - Enhanced for Hotword */
 .voice-status{
   position:fixed;
   top:24px;
@@ -336,32 +311,41 @@ header.top-mode .action-buttons{
   z-index:10000;
   border:1px solid var(--border);
   animation:slideIn 0.3s ease;
+  min-width:200px;
 }
-
+.voice-status.hotword-mode{
+  border-color:var(--hotword);
+  background:#1f2937;
+}
 @keyframes slideIn{
   from{transform:translateX(100px);opacity:0;}
   to{transform:translateX(0);opacity:1;}
 }
-
 .voice-dot{
   width:10px;
   height:10px;
   background:#ef4444;
   border-radius:50%;
   animation:pulse 1.5s infinite;
+  flex-shrink:0;
 }
-
+.voice-dot.hotword{
+  background:var(--hotword);
+  animation:pulse-hotword 2s infinite;
+}
 @keyframes pulse{
   0%,100%{opacity:1;}
   50%{opacity:0.3;}
 }
-
+@keyframes pulse-hotword{
+  0%,100%{transform:scale(1);opacity:1;}
+  50%{transform:scale(1.2);opacity:0.7;}
+}
 .voice-text{
   font-size:0.9rem;
   font-weight:500;
 }
 
-/* Loading */
 .loading-spinner{
   border:3px solid #1f2937;
   border-top:3px solid var(--accent);
@@ -371,13 +355,11 @@ header.top-mode .action-buttons{
   animation:spin 1s linear infinite;
   margin:60px auto;
 }
-
 @keyframes spin{
   0%{transform:rotate(0deg);}
   100%{transform:rotate(360deg);}
 }
 
-/* Pagination */
 .pagination{
   display:flex;
   gap:16px;
@@ -385,7 +367,6 @@ header.top-mode .action-buttons{
   align-items:center;
   margin:40px 0;
 }
-
 .page-btn{
   padding:10px 20px;
   border:1px solid var(--border);
@@ -396,25 +377,21 @@ header.top-mode .action-buttons{
   font-size:0.9rem;
   transition:all 0.2s;
 }
-
 .page-btn:hover:not(:disabled){
   border-color:var(--accent);
   background:rgba(139,92,246,0.1);
 }
-
 .page-btn:disabled{
   opacity:0.4;
   cursor:not-allowed;
 }
 
-/* Music & Features */
 .music-options{
   display:flex;
   gap:12px;
   margin-top:16px;
   flex-wrap:wrap;
 }
-
 .music-btn{
   padding:10px 20px;
   background:var(--border);
@@ -425,7 +402,6 @@ header.top-mode .action-buttons{
   color:var(--text);
   transition:all 0.2s;
 }
-
 .music-btn:hover{
   background:#4b5563;
   border-color:var(--accent);
@@ -442,14 +418,12 @@ header.top-mode .action-buttons{
   transition:all 0.2s;
   border-left:3px solid transparent;
 }
-
 .history-item:hover{
   background:rgba(139,92,246,0.15);
   border-left-color:var(--accent);
   padding-left:16px;
 }
 
-/* File Modal */
 .service-modal{
   position:fixed;
   inset:0;
@@ -462,12 +436,10 @@ header.top-mode .action-buttons{
   padding:20px;
   animation:fadeIn 0.2s;
 }
-
 @keyframes fadeIn{
   from{opacity:0;}
   to{opacity:1;}
 }
-
 .modal-content{
   background:var(--card);
   border:1px solid var(--border);
@@ -479,14 +451,12 @@ header.top-mode .action-buttons{
   overflow-y:auto;
   box-shadow:0 20px 60px rgba(0,0,0,0.5);
 }
-
 .modal-header{
   display:flex;
   justify-content:space-between;
   align-items:center;
   margin-bottom:24px;
 }
-
 .modal-close{
   background:none;
   border:none;
@@ -501,12 +471,10 @@ header.top-mode .action-buttons{
   border-radius:50%;
   transition:all 0.2s;
 }
-
 .modal-close:hover{
   background:rgba(255,255,255,0.1);
   color:var(--text);
 }
-
 .file-upload-area{
   border:2px dashed var(--border);
   border-radius:12px;
@@ -516,19 +484,16 @@ header.top-mode .action-buttons{
   transition:all 0.2s;
   margin-bottom:24px;
 }
-
 .file-upload-area:hover,
 .file-upload-area.dragover{
   border-color:var(--accent);
   background:rgba(139,92,246,0.05);
 }
-
 .upload-icon{
   font-size:3rem;
   margin-bottom:12px;
   opacity:0.8;
 }
-
 .file-item{
   display:flex;
   justify-content:space-between;
@@ -541,12 +506,10 @@ header.top-mode .action-buttons{
   border:1px solid transparent;
   transition:all 0.2s;
 }
-
 .file-item:hover{
   border-color:var(--border);
   transform:translateX(4px);
 }
-
 .file-name{
   flex:1;
   overflow:hidden;
@@ -554,13 +517,11 @@ header.top-mode .action-buttons{
   white-space:nowrap;
   font-size:0.9rem;
 }
-
 .file-size{
   font-size:0.8rem;
   color:var(--muted);
   font-variant-numeric:tabular-nums;
 }
-
 .file-action-btn{
   background:none;
   border:none;
@@ -571,19 +532,16 @@ header.top-mode .action-buttons{
   border-radius:4px;
   transition:all 0.2s;
 }
-
 .file-action-btn:hover{
   color:var(--accent);
   background:rgba(139,92,246,0.1);
 }
-
 .file-services{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
   gap:12px;
   margin-top:20px;
 }
-
 .file-service{
   background:#1f2937;
   border:1px solid var(--border);
@@ -593,38 +551,31 @@ header.top-mode .action-buttons{
   cursor:pointer;
   transition:all 0.2s;
 }
-
 .file-service:hover{
   background:#374151;
   transform:translateY(-2px);
   border-color:var(--accent);
   box-shadow:0 4px 12px rgba(0,0,0,0.2);
 }
-
 .file-service-icon{
   font-size:2rem;
   margin-bottom:8px;
 }
-
 .file-service-name{
   font-size:0.95rem;
   font-weight:600;
   margin-bottom:4px;
 }
-
 .file-service-desc{
   font-size:0.8rem;
   color:var(--muted);
 }
-
 .note{
   color:var(--muted);
   font-size:0.85rem;
   margin-top:8px;
   line-height:1.4;
 }
-
-/* Embed Box */
 #embedBox{
   margin-top:20px;
   border-radius:12px;
@@ -632,15 +583,12 @@ header.top-mode .action-buttons{
   border:1px solid var(--border);
   background:#000;
 }
-
-/* Welcome State */
 .welcome-hint{
   color:var(--muted);
   font-size:0.9rem;
   margin-top:24px;
   text-align:center;
 }
-
 .welcome-hint kbd{
   background:var(--card);
   padding:2px 8px;
@@ -650,59 +598,49 @@ header.top-mode .action-buttons{
   font-size:0.85em;
 }
 
-/* Responsive */
+/* Hotword badge */
+.hotword-badge{
+  position:absolute;
+  top:-8px;
+  right:-8px;
+  background:var(--hotword);
+  color:var(--bg);
+  font-size:0.65rem;
+  padding:2px 6px;
+  border-radius:10px;
+  font-weight:bold;
+  display:none;
+}
+.icon-btn.hotword-active .hotword-badge{
+  display:block;
+}
+
 @media(max-width:768px){
-  .yakin-logo{
-    font-size:2.5rem;
-  }
-  
-  header.top-mode{
-    padding:12px 16px;
-    gap:12px;
-  }
-  
-  header.top-mode .yakin-logo{
-    font-size:1.2rem;
-    display:none;
-  }
-  
-  .search-container{
-    max-width:100%;
-  }
-  
-  #results{
-    padding:0 16px;
-    margin:16px auto;
-  }
-  
-  .file-services{
-    grid-template-columns:repeat(2,1fr);
-  }
-  
-  .action-buttons{
-    flex-direction:column;
-    width:100%;
-    padding:0 20px;
-  }
-  
-  .action-btn{
-    width:100%;
-  }
+  .yakin-logo{font-size:2.5rem;}
+  header.top-mode{padding:12px 16px;gap:12px;}
+  header.top-mode .yakin-logo{font-size:1.2rem;display:none;}
+  .search-container{max-width:100%;}
+  #results{padding:0 16px;margin:16px auto;}
+  .file-services{grid-template-columns:repeat(2,1fr);}
+  .action-buttons{flex-direction:column;width:100%;padding:0 20px;}
+  .action-btn{width:100%;}
+  .voice-status{top:auto;bottom:24px;right:16px;left:16px;justify-content:center;}
 }
 </style>
 </head>
-
 <body>
 
-<!-- Header with Centered Search -->
 <header id="mainHeader">
   <div class="yakin-logo">🚀 Yakin Search</div>
   
   <div class="search-container">
     <div class="search-box">
-      <input id="searchInput" class="search-input" placeholder="Search the web or say 'play [song]'..." autocomplete="off">
+      <input id="searchInput" class="search-input" placeholder="Say 'Yakin' then your command..." autocomplete="off">
       <div class="search-btns">
-        <button class="icon-btn" id="voiceBtn" title="Voice Search">🎤</button>
+        <button class="icon-btn" id="voiceBtn" title="Voice Search (Click to enable wake word)">
+          🎤
+          <span class="hotword-badge">ON</span>
+        </button>
         <button class="icon-btn" id="doguAiBtn" title="AI Mode">✨</button>
         <button class="icon-btn" id="fileBtn" title="File Search">📁</button>
         <button class="icon-btn" id="textSearchBtn" title="Search" style="background:var(--accent);color:white;">🔍</button>
@@ -710,18 +648,16 @@ header.top-mode .action-buttons{
     </div>
   </div>
   
-  <!-- Action Buttons (Hidden in top mode) -->
   <div class="action-buttons">
     <button class="action-btn" onclick="handleSearch(elements.input.value)">Yakin Search</button>
     <button class="action-btn" onclick="toggleAiMode(); handleSearch(elements.input.value)">I'm Feeling Lucky</button>
   </div>
   
   <div class="welcome-hint" id="welcomeHint">
-    Press <kbd>/</kbd> to focus • <kbd>Ctrl</kbd>+<kbd>K</kbd> for files
+    Click the 🎤 button once to enable "Hey Yakin" voice commands • Press <kbd>/</kbd> to type
   </div>
 </header>
 
-<!-- Tabs (Hidden initially) -->
 <div class="tabs" id="tabs">
   <div class="tab active" data-type="web">🔍 All</div>
   <div class="tab" data-type="images">🖼️ Images</div>
@@ -730,16 +666,13 @@ header.top-mode .action-buttons{
   <div class="tab" data-type="maps">🗺️ Maps</div>
 </div>
 
-<!-- Voice Status -->
 <div class="voice-status" id="voiceStatus">
-  <div class="voice-dot"></div>
-  <div class="voice-text">Listening...</div>
+  <div class="voice-dot" id="voiceDot"></div>
+  <div class="voice-text" id="voiceText">Listening...</div>
 </div>
 
-<!-- Results -->
 <div id="results"></div>
 
-<!-- File Modal -->
 <div class="service-modal" id="fileModal">
   <div class="modal-content">
     <div class="modal-header">
@@ -799,30 +732,30 @@ header.top-mode .action-buttons{
 </div>
 
 <script>
-// Configuration
 const CONFIG = {
   GOOGLE_API_KEY: '',
   GOOGLE_CX: '',
   YOUTUBE_API_KEY: ''
 };
 
-// State
 let doguAiMode = false;
 let currentTab = 'web';
 let currentPage = 1;
 let lastQuery = '';
 let isListening = false;
+let hotwordEnabled = false; // Starts false, true after first click
 let recognition = null;
 let searchHistory = JSON.parse(localStorage.getItem('yakinHistory')) || [];
 let uploadedFiles = JSON.parse(localStorage.getItem('yakinFiles')) || [];
 
-// DOM Elements
 const elements = {
   input: document.getElementById('searchInput'),
   results: document.getElementById('results'),
   header: document.getElementById('mainHeader'),
   tabs: document.getElementById('tabs'),
   voiceStatus: document.getElementById('voiceStatus'),
+  voiceText: document.getElementById('voiceText'),
+  voiceDot: document.getElementById('voiceDot'),
   fileModal: document.getElementById('fileModal'),
   uploadArea: document.getElementById('uploadArea'),
   fileInput: document.getElementById('fileInput'),
@@ -834,19 +767,17 @@ const elements = {
   welcomeHint: document.getElementById('welcomeHint')
 };
 
-// Initialize
 function init() {
   elements.input.focus();
   renderHistory();
+  initHotwordRecognition(); // Setup hotword detection
   
-  // Event Listeners
   elements.input.addEventListener('keydown', handleInputKeydown);
   elements.textSearchBtn.addEventListener('click', () => handleSearch(elements.input.value));
   elements.doguAiBtn.addEventListener('click', toggleAiMode);
-  elements.voiceBtn.addEventListener('click', toggleVoice);
+  elements.voiceBtn.addEventListener('click', toggleHotwordMode);
   elements.fileBtn.addEventListener('click', openFileModal);
   
-  // File upload
   elements.uploadArea.addEventListener('click', () => elements.fileInput.click());
   elements.uploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -858,20 +789,160 @@ function init() {
   elements.uploadArea.addEventListener('drop', handleFileDrop);
   elements.fileInput.addEventListener('change', handleFileSelect);
   
-  // Tabs
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => switchTab(tab.dataset.type));
   });
   
-  // Modal outside click
   elements.fileModal.addEventListener('click', (e) => {
     if (e.target === elements.fileModal) closeFileModal();
   });
-  
-  initSpeechRecognition();
 }
 
-// Search Functions
+/* ========== HOTWORD / WAKE WORD IMPLEMENTATION ========== */
+function initHotwordRecognition() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    elements.voiceBtn.style.display = 'none';
+    console.log('Speech recognition not supported');
+    return;
+  }
+  
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.continuous = true;   // Always on
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+  
+  recognition.onstart = () => {
+    isListening = true;
+    elements.voiceStatus.style.display = 'flex';
+    elements.voiceStatus.classList.add('hotword-mode');
+    elements.voiceDot.classList.add('hotword');
+    elements.voiceBtn.classList.add('hotword-active');
+    updateVoiceStatus('Listening for "Yakin"...');
+    console.log('Hotword listening started');
+  };
+  
+  recognition.onresult = (e) => {
+    const transcript = Array.from(e.results)
+      .map(r => r[0].transcript)
+      .join(' ')
+      .toLowerCase();
+    
+    // Check if hotword "yakin" is detected
+    if (transcript.includes('yakin')) {
+      console.log('Wake word detected:', transcript);
+      
+      // Extract command after "yakin"
+      const command = transcript.split('yakin')[1]?.trim() || '';
+      
+      updateVoiceStatus('🎯 Yakin detected!');
+      elements.input.placeholder = 'Wake word detected! Processing...';
+      
+      // Visual feedback
+      elements.voiceDot.style.animation = 'none';
+      elements.voiceDot.offsetHeight; // Trigger reflow
+      elements.voiceDot.style.animation = 'pulse-hotword 0.5s infinite';
+      
+      setTimeout(() => {
+        if (command.length > 0) {
+          elements.input.value = command;
+          handleSearch(command);
+          updateVoiceStatus(`Executing: "${command}"`);
+        } else {
+          elements.input.focus();
+          updateVoiceStatus('Say a command after "Yakin"');
+        }
+        
+        // Reset animation after 2 seconds
+        setTimeout(() => {
+          if (hotwordEnabled) {
+            updateVoiceStatus('Listening for "Yakin"...');
+            elements.voiceDot.style.animation = '';
+          }
+        }, 2000);
+      }, 500);
+    }
+  };
+  
+  recognition.onerror = (e) => {
+    console.error('Speech recognition error:', e.error);
+    // Don't stop on error, try to restart if it was an audio error
+    if (e.error === 'no-speech' || e.error === 'audio-capture') {
+      // Auto restart handled by onend
+    } else if (e.error === 'not-allowed') {
+      updateVoiceStatus('Microphone blocked');
+      stopHotword();
+    }
+  };
+  
+  recognition.onend = () => {
+    console.log('Speech recognition ended');
+    if (hotwordEnabled) {
+      // Auto restart for always-on behavior
+      setTimeout(() => {
+        if (hotwordEnabled && !isListening) {
+          recognition.start().catch(err => {
+            console.error('Restart failed:', err);
+            stopHotword();
+          });
+        }
+      }, 100);
+    } else {
+      isListening = false;
+      elements.voiceStatus.style.display = 'none';
+      elements.voiceBtn.classList.remove('hotword-active');
+      elements.voiceStatus.classList.remove('hotword-mode');
+      elements.voiceDot.classList.remove('hotword');
+    }
+  };
+}
+
+function toggleHotwordMode() {
+  if (!recognition) {
+    alert('Voice recognition not supported in your browser');
+    return;
+  }
+  
+  if (hotwordEnabled) {
+    // Turn off
+    stopHotword();
+    hotwordEnabled = false;
+    elements.welcomeHint.innerHTML = 'Wake word disabled. Click 🎤 to enable "Hey Yakin"';
+  } else {
+    // Turn on (requires user gesture)
+    hotwordEnabled = true;
+    try {
+      recognition.start();
+      elements.welcomeHint.innerHTML = '<b style="color:var(--hotword)">Wake word active!</b> Just say "Yakin search for dogs"';
+    } catch (e) {
+      console.error('Start failed:', e);
+      hotwordEnabled = false;
+    }
+  }
+}
+
+function stopHotword() {
+  hotwordEnabled = false;
+  if (recognition) {
+    try {
+      recognition.stop();
+    } catch (e) {
+      // Already stopped
+    }
+  }
+  isListening = false;
+  elements.voiceStatus.style.display = 'none';
+  elements.voiceBtn.classList.remove('hotword-active');
+  elements.voiceStatus.classList.remove('hotword-mode');
+  elements.voiceDot.classList.remove('hotword');
+  updateVoiceStatus('Listening...');
+}
+
+function updateVoiceStatus(text) {
+  elements.voiceText.innerText = text;
+}
+
+/* ========== SEARCH FUNCTIONS ========== */
 async function handleSearch(query) {
   const q = query.trim();
   if (!q) {
@@ -879,7 +950,6 @@ async function handleSearch(query) {
     return;
   }
   
-  // Switch to top mode
   elements.header.classList.add('top-mode');
   elements.tabs.classList.add('visible');
   elements.welcomeHint.style.display = 'none';
@@ -969,9 +1039,7 @@ function displayResults(items, query, page) {
           </div>
           <div class="result-snippet">${item.snippet || ''}</div>
         </div>`;
-    } catch (e) {
-      // Skip invalid URLs
-    }
+    } catch (e) {}
   });
   
   html += `
@@ -1001,11 +1069,9 @@ function generateAISummary(items) {
       <div style="color:var(--text);line-height:1.6">
         ${sentences.map(s => `• ${s.trim()}`).join('<br>')}
       </div>
-      <div class="note" style="margin-top:12px;font-size:0.8rem">Generated from top search results</div>
     </div>`;
 }
 
-// Music
 function handleMusicQuery(query) {
   const musicData = parseMusicQuery(query);
   
@@ -1076,50 +1142,7 @@ function playYouTubeMusic(query) {
   window.open(`https://music.youtube.com/search?q=${encodeURIComponent(query)}`, '_blank');
 }
 
-// Voice
-function initSpeechRecognition() {
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    elements.voiceBtn.style.display = 'none';
-    return;
-  }
-  
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition();
-  recognition.continuous = false;
-  recognition.interimResults = false;
-  recognition.lang = 'en-US';
-  
-  recognition.onstart = () => {
-    isListening = true;
-    elements.voiceStatus.style.display = 'flex';
-    elements.input.placeholder = 'Listening... Speak now';
-    elements.voiceBtn.classList.add('active');
-  };
-  
-  recognition.onresult = (e) => {
-    const transcript = e.results[0][0].transcript;
-    elements.input.value = transcript;
-    stopListening();
-    handleSearch(transcript);
-  };
-  
-  recognition.onerror = stopListening;
-  recognition.onend = stopListening;
-}
-
-function toggleVoice() {
-  if (!recognition) return;
-  isListening ? recognition.stop() : recognition.start();
-}
-
-function stopListening() {
-  isListening = false;
-  elements.voiceStatus.style.display = 'none';
-  elements.voiceBtn.classList.remove('active');
-  elements.input.placeholder = doguAiMode ? 'Ask Doğu AI anything...' : 'Search the web...';
-}
-
-// Files
+/* ========== FILE HANDLING ========== */
 function openFileModal() {
   elements.fileModal.style.display = 'flex';
   renderFileList();
@@ -1220,7 +1243,7 @@ function openService(service) {
   closeFileModal();
 }
 
-// UI Helpers
+/* ========== UTILITY FUNCTIONS ========== */
 function addToHistory(q) {
   if (!q) return;
   searchHistory = searchHistory.filter(item => item.toLowerCase() !== q.toLowerCase());
@@ -1230,9 +1253,7 @@ function addToHistory(q) {
 }
 
 function renderHistory() {
-  if (searchHistory.length === 0 && uploadedFiles.length === 0) {
-    return;
-  }
+  if (searchHistory.length === 0 && uploadedFiles.length === 0) return;
   
   let html = '<div style="max-width:584px;margin:0 auto;padding:0 24px">';
   
@@ -1274,7 +1295,7 @@ function switchTab(type) {
 function toggleAiMode() {
   doguAiMode = !doguAiMode;
   elements.doguAiBtn.classList.toggle('active', doguAiMode);
-  elements.input.placeholder = doguAiMode ? 'Ask Doğu AI anything...' : 'Search the web...';
+  elements.input.placeholder = doguAiMode ? 'Ask Doğu AI anything...' : 'Say "Yakin" then your command...';
   elements.input.focus();
 }
 
@@ -1289,7 +1310,6 @@ function handleInputKeydown(e) {
     e.preventDefault();
     openFileModal();
   } else if (e.key === 'Escape') {
-    if (isListening && recognition) recognition.stop();
     if (elements.fileModal.style.display === 'flex') {
       closeFileModal();
     } else {
