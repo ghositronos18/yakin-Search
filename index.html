@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-
+<html lang="en">
 <head>
-<title>Yakin Search </title>
+<meta charset="UTF-8">
+<title>Yakin Search – Doğu AI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
 
@@ -18,227 +19,330 @@
 }
 *{
   box-sizing:border-box;
+  margin:0;
+  padding:0;
 }
 body{
-  margin:0;
   font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;
   background:var(--bg);
   color:var(--text);
   line-height:1.5;
+  min-height:100vh;
 }
 
+/* Centered Header (Google Style) */
 header{
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  height:60vh;
+  min-height:100vh;
   padding:20px;
-  transition:all .4s ease;
+  transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position:relative;
 }
+
+/* Top Bar Mode (After Search) */
 header.top-mode{
-  height:auto;
+  min-height:auto;
   flex-direction:row;
   justify-content:flex-start;
-  padding:12px 16px;
+  padding:16px 24px;
   border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  background:var(--bg);
+  z-index:100;
+  gap:16px;
 }
 
-.logo-image{
-  position:absolute;
-  top:12px;
-  left:12px;
-  width:40px;
-  height:40px;
-  cursor:pointer;
-  z-index:10;
-}
-header.top-mode .logo-image{
-  position:static;
-  width:32px;
-  height:32px;
-  margin-right:12px;
-}
-
+/* Logo Styles */
 .yakin-logo{
-  font-size:2.5rem;
+  font-size:4rem;
   font-weight:600;
-  margin-bottom:24px;
+  margin-bottom:32px;
   display:flex;
   align-items:center;
-  gap:12px;
-}
-header.top-mode .yakin-logo{
-  font-size:1.4rem;
-  margin-bottom:0;
-  margin-right:16px;
+  gap:16px;
+  transition:all 0.4s ease;
+  text-align:center;
 }
 
+header.top-mode .yakin-logo{
+  font-size:1.5rem;
+  margin-bottom:0;
+  margin-right:8px;
+}
+
+/* Search Container */
+.search-container{
+  width:100%;
+  max-width:584px;
+  position:relative;
+  transition:all 0.4s ease;
+}
+
+header.top-mode .search-container{
+  max-width:692px;
+}
+
+/* Search Box Wrapper */
 .search-box{
   position:relative;
   width:100%;
-  max-width:650px;
   display:flex;
-  gap:8px;
-}
-.search-input{
-  flex:1;
-  padding:12px 48px 12px 20px;
+  align-items:center;
+  background:var(--card);
   border:1px solid var(--border);
   border-radius:24px;
-  background:var(--card);
-  color:var(--text);
-  font-size:1rem;
-  outline:none;
-  transition:border-color .2s;
+  padding:8px 16px;
+  box-shadow:0 1px 6px rgba(0,0,0,0.3);
+  transition:all 0.2s ease;
 }
-.search-input:focus{
+
+.search-box:hover,
+.search-box:focus-within{
+  background:#1f2937;
+  box-shadow:0 2px 8px rgba(139,92,246,0.15);
   border-color:var(--accent);
 }
-.search-btns{
-  position:absolute;
-  right:12px;
-  top:50%;
-  transform:translateY(-50%);
-  display:flex;
-  gap:6px;
+
+/* Search Input */
+.search-input{
+  flex:1;
+  background:transparent;
+  border:none;
+  color:var(--text);
+  font-size:16px;
+  padding:8px 12px;
+  outline:none;
+  width:100%;
 }
+
+.search-input::placeholder{
+  color:var(--muted);
+}
+
+/* Search Buttons */
+.search-btns{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
 .icon-btn{
   background:none;
   border:none;
   color:var(--muted);
   cursor:pointer;
   font-size:1.2rem;
-  padding:4px;
+  padding:6px;
   border-radius:50%;
-  transition:all .2s;
+  transition:all 0.2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:36px;
 }
+
 .icon-btn:hover{
-  color:var(--text);
   background:rgba(139,92,246,0.1);
+  color:var(--text);
+  transform:scale(1.05);
 }
+
 .icon-btn.active{
   color:var(--accent);
+  background:rgba(139,92,246,0.2);
+}
+
+/* Main Action Buttons (Centered below search) */
+.action-buttons{
+  display:flex;
+  gap:12px;
+  margin-top:24px;
+  justify-content:center;
+  opacity:1;
+  transition:opacity 0.3s;
+}
+
+header.top-mode .action-buttons{
+  display:none;
+}
+
+.action-btn{
+  background:var(--card);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:10px 24px;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:14px;
+  transition:all 0.2s;
+}
+
+.action-btn:hover{
+  border-color:var(--accent);
+  background:#1f2937;
+  box-shadow:0 1px 2px rgba(0,0,0,0.2);
 }
 
 /* Tabs */
 .tabs{
   display:none;
-  gap:6px;
-  margin:0 16px 12px;
+  gap:8px;
+  padding:12px 24px;
   border-bottom:1px solid var(--border);
-  overflow-x:auto;
+  background:var(--bg);
+  position:sticky;
+  top:73px;
+  z-index:99;
 }
+
 .tabs.visible{
   display:flex;
 }
+
 .tab{
   padding:8px 16px;
   cursor:pointer;
-  border-bottom:2px solid transparent;
   color:var(--muted);
-  font-size:.9rem;
-  white-space:nowrap;
-  transition:all .2s;
+  font-size:14px;
+  border-radius:4px;
+  transition:all 0.2s;
+  position:relative;
 }
+
 .tab:hover{
   color:var(--text);
+  background:rgba(139,92,246,0.1);
 }
+
 .tab.active{
   color:var(--accent);
-  border-color:var(--accent);
+  background:rgba(139,92,246,0.15);
+}
+
+.tab.active::after{
+  content:'';
+  position:absolute;
+  bottom:-12px;
+  left:0;
+  right:0;
+  height:2px;
+  background:var(--accent);
 }
 
 /* Results */
 #results{
   max-width:800px;
-  margin:0 auto;
-  padding:20px 16px;
+  margin:24px auto;
+  padding:0 24px;
+  min-height:50vh;
 }
 
+/* Result Cards */
 .result-card{
   background:var(--card);
   border:1px solid var(--border);
   border-radius:12px;
-  padding:16px 20px;
-  margin-bottom:12px;
-  transition:transform .2s,background .2s;
+  padding:18px 20px;
+  margin-bottom:16px;
+  transition:transform 0.2s,background 0.2s;
 }
+
 .result-card:hover{
   background:#1a2332;
   transform:translateY(-1px);
+  border-color:#4b5563;
 }
+
 .result-title{
   font-size:1.1rem;
   color:var(--link);
   text-decoration:none;
   display:block;
-  margin-bottom:4px;
+  margin-bottom:6px;
   font-weight:500;
 }
+
 .result-title:hover{
   text-decoration:underline;
 }
+
 .result-title:visited{
   color:#c58af9;
 }
+
 .result-url{
   color:var(--url);
-  font-size:.9rem;
+  font-size:0.9rem;
   margin-bottom:8px;
   display:flex;
   align-items:center;
-  gap:6px;
+  gap:8px;
 }
+
 .result-favicon{
   width:16px;
   height:16px;
+  border-radius:2px;
 }
+
 .result-snippet{
   color:var(--muted);
-  font-size:.95rem;
-  line-height:1.5;
+  font-size:0.95rem;
+  line-height:1.6;
 }
 
 /* AI Summary */
 .dogu-ai-response{
-  border-left:4px solid var(--accent);
-  padding-left:16px;
-  margin:16px 0;
+  border-left:3px solid var(--accent);
+  background:linear-gradient(90deg, rgba(139,92,246,0.1) 0%, transparent 100%);
 }
+
 .dogu-ai-header{
   display:flex;
   align-items:center;
   gap:10px;
   margin-bottom:12px;
 }
+
 .dogu-ai-icon{
-  width:32px;
-  height:32px;
+  width:28px;
+  height:28px;
   background:linear-gradient(135deg,#667eea,#764ba2);
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:1rem;
+  font-size:0.9rem;
   box-shadow:0 2px 8px rgba(102,126,234,0.3);
 }
 
 /* Voice Status */
 .voice-status{
   position:fixed;
-  top:20px;
-  right:20px;
+  top:24px;
+  right:24px;
   background:var(--card);
   padding:12px 20px;
-  border-radius:12px;
+  border-radius:24px;
   display:none;
   align-items:center;
   gap:12px;
-  box-shadow:0 4px 20px rgba(0,0,0,.5);
-  z-index:1000;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+  z-index:10000;
   border:1px solid var(--border);
+  animation:slideIn 0.3s ease;
 }
+
+@keyframes slideIn{
+  from{transform:translateX(100px);opacity:0;}
+  to{transform:translateX(0);opacity:1;}
+}
+
 .voice-dot{
   width:10px;
   height:10px;
@@ -246,12 +350,14 @@ header.top-mode .yakin-logo{
   border-radius:50%;
   animation:pulse 1.5s infinite;
 }
+
 @keyframes pulse{
   0%,100%{opacity:1;}
-  50%{opacity:.3;}
+  50%{opacity:0.3;}
 }
+
 .voice-text{
-  font-size:.9rem;
+  font-size:0.9rem;
   font-weight:500;
 }
 
@@ -260,11 +366,12 @@ header.top-mode .yakin-logo{
   border:3px solid #1f2937;
   border-top:3px solid var(--accent);
   border-radius:50%;
-  width:32px;
-  height:32px;
+  width:40px;
+  height:40px;
   animation:spin 1s linear infinite;
-  margin:40px auto;
+  margin:60px auto;
 }
+
 @keyframes spin{
   0%{transform:rotate(0deg);}
   100%{transform:rotate(360deg);}
@@ -273,249 +380,354 @@ header.top-mode .yakin-logo{
 /* Pagination */
 .pagination{
   display:flex;
-  gap:12px;
+  gap:16px;
   justify-content:center;
   align-items:center;
-  margin:32px 0;
+  margin:40px 0;
 }
+
 .page-btn{
-  padding:8px 16px;
+  padding:10px 20px;
   border:1px solid var(--border);
   background:var(--card);
   color:var(--text);
   border-radius:8px;
   cursor:pointer;
-  font-size:.9rem;
-  transition:all .2s;
+  font-size:0.9rem;
+  transition:all 0.2s;
 }
+
 .page-btn:hover:not(:disabled){
   border-color:var(--accent);
   background:rgba(139,92,246,0.1);
 }
+
 .page-btn:disabled{
-  opacity:.5;
+  opacity:0.4;
   cursor:not-allowed;
 }
 
-/* Music */
+/* Music & Features */
 .music-options{
   display:flex;
-  gap:10px;
+  gap:12px;
   margin-top:16px;
   flex-wrap:wrap;
 }
+
 .music-btn{
-  padding:8px 16px;
+  padding:10px 20px;
   background:var(--border);
   border:1px solid transparent;
   border-radius:20px;
-  font-size:.9rem;
+  font-size:0.9rem;
   cursor:pointer;
   color:var(--text);
-  transition:all .2s;
+  transition:all 0.2s;
 }
+
 .music-btn:hover{
   background:#4b5563;
   border-color:var(--accent);
+  transform:translateY(-1px);
 }
 
-/* History */
 .history-item{
-  padding:8px 12px;
-  margin:4px 0;
-  background:rgba(139,92,246,0.1);
-  border-radius:6px;
+  padding:10px 14px;
+  margin:6px 0;
+  background:rgba(139,92,246,0.08);
+  border-radius:8px;
   cursor:pointer;
-  font-size:.9rem;
-  transition:background .2s;
+  font-size:0.95rem;
+  transition:all 0.2s;
+  border-left:3px solid transparent;
 }
+
 .history-item:hover{
-  background:rgba(139,92,246,0.2);
+  background:rgba(139,92,246,0.15);
+  border-left-color:var(--accent);
+  padding-left:16px;
 }
 
 /* File Modal */
 .service-modal{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.8);
+  background:rgba(0,0,0,0.8);
   backdrop-filter:blur(4px);
   display:none;
   align-items:center;
   justify-content:center;
   z-index:2000;
   padding:20px;
+  animation:fadeIn 0.2s;
 }
+
+@keyframes fadeIn{
+  from{opacity:0;}
+  to{opacity:1;}
+}
+
 .modal-content{
   background:var(--card);
   border:1px solid var(--border);
   border-radius:16px;
-  padding:24px;
+  padding:28px;
   max-width:600px;
   width:100%;
-  max-height:80vh;
+  max-height:85vh;
   overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
 }
+
 .modal-header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:20px;
+  margin-bottom:24px;
 }
+
 .modal-close{
   background:none;
   border:none;
   color:var(--muted);
   font-size:1.8rem;
   cursor:pointer;
-  line-height:1;
+  width:36px;
+  height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  transition:all 0.2s;
 }
+
 .modal-close:hover{
+  background:rgba(255,255,255,0.1);
   color:var(--text);
 }
+
 .file-upload-area{
   border:2px dashed var(--border);
   border-radius:12px;
-  padding:40px 20px;
+  padding:48px 24px;
   text-align:center;
   cursor:pointer;
-  transition:all .2s;
-  margin-bottom:20px;
+  transition:all 0.2s;
+  margin-bottom:24px;
 }
-.file-upload-area:hover,.file-upload-area.dragover{
+
+.file-upload-area:hover,
+.file-upload-area.dragover{
   border-color:var(--accent);
   background:rgba(139,92,246,0.05);
 }
+
 .upload-icon{
   font-size:3rem;
   margin-bottom:12px;
+  opacity:0.8;
 }
+
 .file-item{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:10px 14px;
+  padding:12px 16px;
   background:#1f2937;
   border-radius:8px;
   margin-bottom:8px;
-  gap:10px;
+  gap:12px;
+  border:1px solid transparent;
+  transition:all 0.2s;
 }
+
+.file-item:hover{
+  border-color:var(--border);
+  transform:translateX(4px);
+}
+
 .file-name{
   flex:1;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-  font-size:.9rem;
+  font-size:0.9rem;
 }
+
 .file-size{
-  font-size:.8rem;
+  font-size:0.8rem;
   color:var(--muted);
+  font-variant-numeric:tabular-nums;
 }
+
 .file-action-btn{
   background:none;
   border:none;
   color:var(--muted);
   cursor:pointer;
-  font-size:1rem;
-  padding:4px;
+  font-size:1.1rem;
+  padding:4px 8px;
   border-radius:4px;
+  transition:all 0.2s;
 }
+
 .file-action-btn:hover{
   color:var(--accent);
   background:rgba(139,92,246,0.1);
 }
+
 .file-services{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
   gap:12px;
-  margin-top:16px;
+  margin-top:20px;
 }
+
 .file-service{
   background:#1f2937;
   border:1px solid var(--border);
   border-radius:12px;
-  padding:16px 12px;
+  padding:20px 12px;
   text-align:center;
   cursor:pointer;
-  transition:all .2s;
+  transition:all 0.2s;
 }
+
 .file-service:hover{
   background:#374151;
   transform:translateY(-2px);
   border-color:var(--accent);
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
 }
+
 .file-service-icon{
-  font-size:1.8rem;
+  font-size:2rem;
   margin-bottom:8px;
 }
+
 .file-service-name{
-  font-size:.9rem;
+  font-size:0.95rem;
   font-weight:600;
   margin-bottom:4px;
 }
+
 .file-service-desc{
-  font-size:.75rem;
+  font-size:0.8rem;
   color:var(--muted);
 }
+
 .note{
   color:var(--muted);
-  font-size:.85rem;
+  font-size:0.85rem;
   margin-top:8px;
+  line-height:1.4;
 }
 
 /* Embed Box */
 #embedBox{
-  margin-top:16px;
+  margin-top:20px;
   border-radius:12px;
   overflow:hidden;
   border:1px solid var(--border);
+  background:#000;
+}
+
+/* Welcome State */
+.welcome-hint{
+  color:var(--muted);
+  font-size:0.9rem;
+  margin-top:24px;
+  text-align:center;
+}
+
+.welcome-hint kbd{
+  background:var(--card);
+  padding:2px 8px;
+  border-radius:4px;
+  border:1px solid var(--border);
+  font-family:monospace;
+  font-size:0.85em;
 }
 
 /* Responsive */
 @media(max-width:768px){
-  header{
-    height:50vh;
-    padding:16px;
-  }
   .yakin-logo{
-    font-size:1.8rem;
+    font-size:2.5rem;
   }
-  .search-box{
+  
+  header.top-mode{
+    padding:12px 16px;
+    gap:12px;
+  }
+  
+  header.top-mode .yakin-logo{
+    font-size:1.2rem;
+    display:none;
+  }
+  
+  .search-container{
     max-width:100%;
   }
+  
   #results{
-    padding:16px 12px;
+    padding:0 16px;
+    margin:16px auto;
   }
+  
   .file-services{
     grid-template-columns:repeat(2,1fr);
+  }
+  
+  .action-buttons{
+    flex-direction:column;
+    width:100%;
+    padding:0 20px;
+  }
+  
+  .action-btn{
+    width:100%;
   }
 }
 </style>
 </head>
 
 <body>
-<!-- Logo -->
-<img id="logoImage" class="logo-image" src="logo.jpg" alt="Yakin" title="Yakin Search" onclick="resetSearch()">
 
-<!-- Header -->
+<!-- Header with Centered Search -->
 <header id="mainHeader">
   <div class="yakin-logo">🚀 Yakin Search</div>
-  <div class="search-box">
-    <input id="searchInput" class="search-input" placeholder="Search the web or say 'play [song]'..." autocomplete="off">
-    <div class="search-btns">
-      <button class="icon-btn" id="textSearchBtn" title="Search">🔍</button>
-      <button class="icon-btn" id="doguAiBtn" title="AI Mode">✨</button>
-      <button class="icon-btn" id="voiceBtn" title="Voice Search">🎤</button>
-      <button class="icon-btn" id="fileBtn" title="File Search">📁</button>
+  
+  <div class="search-container">
+    <div class="search-box">
+      <input id="searchInput" class="search-input" placeholder="Search the web or say 'play [song]'..." autocomplete="off">
+      <div class="search-btns">
+        <button class="icon-btn" id="voiceBtn" title="Voice Search">🎤</button>
+        <button class="icon-btn" id="doguAiBtn" title="AI Mode">✨</button>
+        <button class="icon-btn" id="fileBtn" title="File Search">📁</button>
+        <button class="icon-btn" id="textSearchBtn" title="Search" style="background:var(--accent);color:white;">🔍</button>
+      </div>
     </div>
+  </div>
+  
+  <!-- Action Buttons (Hidden in top mode) -->
+  <div class="action-buttons">
+    <button class="action-btn" onclick="handleSearch(elements.input.value)">Yakin Search</button>
+    <button class="action-btn" onclick="toggleAiMode(); handleSearch(elements.input.value)">I'm Feeling Lucky</button>
+  </div>
+  
+  <div class="welcome-hint" id="welcomeHint">
+    Press <kbd>/</kbd> to focus • <kbd>Ctrl</kbd>+<kbd>K</kbd> for files
   </div>
 </header>
 
-<!-- Tabs -->
+<!-- Tabs (Hidden initially) -->
 <div class="tabs" id="tabs">
-  <div class="tab active" data-type="web">All</div>
-  <div class="tab" data-type="images">Images</div>
-  <div class="tab" data-type="videos">Videos</div>
-  <div class="tab" data-type="news">News</div>
+  <div class="tab active" data-type="web">🔍 All</div>
+  <div class="tab" data-type="images">🖼️ Images</div>
+  <div class="tab" data-type="videos">🎥 Videos</div>
+  <div class="tab" data-type="news">📰 News</div>
+  <div class="tab" data-type="maps">🗺️ Maps</div>
 </div>
 
 <!-- Voice Status -->
@@ -531,60 +743,67 @@ header.top-mode .yakin-logo{
 <div class="service-modal" id="fileModal">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 style="margin:0">File Services</h3>
+      <h3 style="margin:0;font-size:1.3rem">File Services</h3>
       <button class="modal-close" onclick="closeFileModal()">×</button>
     </div>
     
     <div class="file-upload-area" id="uploadArea">
       <div class="upload-icon">📁</div>
-      <p>Drag & drop files here or click to browse</p>
-      <p class="note">Supports images, documents, audio, and video files</p>
+      <p style="font-size:1.1rem;margin-bottom:8px">Drag & drop files here</p>
+      <p class="note">or click to browse • Supports images, documents, audio, video</p>
       <input type="file" id="fileInput" multiple style="display:none">
     </div>
     
     <div id="fileList"></div>
     
+    <div style="margin-top:24px;margin-bottom:12px;font-weight:600;color:var(--muted);font-size:0.9rem">SEARCH ON</div>
     <div class="file-services">
       <div class="file-service" onclick="searchOnService('googleDrive')">
         <div class="file-service-icon">📁</div>
         <div class="file-service-name">Google Drive</div>
-        <div class="file-service-desc">Cloud storage</div>
       </div>
       <div class="file-service" onclick="searchOnService('dropbox')">
         <div class="file-service-icon">📦</div>
         <div class="file-service-name">Dropbox</div>
-        <div class="file-service-desc">File sharing</div>
       </div>
       <div class="file-service" onclick="searchOnService('onedrive')">
         <div class="file-service-icon">☁️</div>
         <div class="file-service-name">OneDrive</div>
-        <div class="file-service-desc">Microsoft cloud</div>
       </div>
       <div class="file-service" onclick="searchOnService('icloud')">
         <div class="file-service-icon">🍎</div>
         <div class="file-service-name">iCloud</div>
-        <div class="file-service-desc">Apple cloud</div>
+      </div>
+    </div>
+    
+    <div style="margin-top:20px;margin-bottom:12px;font-weight:600;color:var(--muted);font-size:0.9rem">QUICK OPEN</div>
+    <div class="file-services">
+      <div class="file-service" onclick="openService('github')">
+        <div class="file-service-icon">💻</div>
+        <div class="file-service-name">GitHub</div>
       </div>
       <div class="file-service" onclick="openService('wetransfer')">
         <div class="file-service-icon">📤</div>
         <div class="file-service-name">WeTransfer</div>
-        <div class="file-service-desc">File transfer</div>
       </div>
-      <div class="file-service" onclick="openService('github')">
-        <div class="file-service-icon">💻</div>
-        <div class="file-service-name">GitHub</div>
-        <div class="file-service-desc">Code files</div>
+      <div class="file-service" onclick="openService('figma')">
+        <div class="file-service-icon">🎨</div>
+        <div class="file-service-name">Figma</div>
+      </div>
+      <div class="file-service" onclick="openService('notion')">
+        <div class="file-service-icon">📝</div>
+        <div class="file-service-name">Notion</div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// Configuration - Replace with your actual API keys
+// Configuration
 const CONFIG = {
   GOOGLE_API_KEY: '',
   GOOGLE_CX: '',
-  YOUTUBE_API_KEY: ''  // Required for music auto-play feature
+  YOUTUBE_API_KEY: ''
 };
 
 // State
@@ -611,7 +830,8 @@ const elements = {
   voiceBtn: document.getElementById('voiceBtn'),
   doguAiBtn: document.getElementById('doguAiBtn'),
   fileBtn: document.getElementById('fileBtn'),
-  textSearchBtn: document.getElementById('textSearchBtn')
+  textSearchBtn: document.getElementById('textSearchBtn'),
+  welcomeHint: document.getElementById('welcomeHint')
 };
 
 // Initialize
@@ -643,20 +863,29 @@ function init() {
     tab.addEventListener('click', () => switchTab(tab.dataset.type));
   });
   
-  // Initialize speech recognition
+  // Modal outside click
+  elements.fileModal.addEventListener('click', (e) => {
+    if (e.target === elements.fileModal) closeFileModal();
+  });
+  
   initSpeechRecognition();
 }
 
 // Search Functions
 async function handleSearch(query) {
   const q = query.trim();
-  if (!q) return;
+  if (!q) {
+    elements.input.focus();
+    return;
+  }
   
-  addToHistory(q);
+  // Switch to top mode
   elements.header.classList.add('top-mode');
   elements.tabs.classList.add('visible');
+  elements.welcomeHint.style.display = 'none';
   
-  // Handle special commands
+  addToHistory(q);
+  
   const lower = q.toLowerCase();
   
   if (lower.startsWith('play ')) {
@@ -671,20 +900,21 @@ async function handleSearch(query) {
     return;
   }
   
-  if (lower.includes('gmail') || lower.includes('email')) {
+  if (lower.includes('gmail')) {
     window.open('https://mail.google.com', '_blank');
     showMessage('Opening Gmail...');
     return;
   }
   
-  // Default web search
   yakinSearch(q, currentTab, 1);
 }
 
 async function yakinSearch(query, type = 'web', page = 1) {
   lastQuery = query;
   currentPage = page;
+  currentTab = type;
   elements.results.innerHTML = '<div class="loading-spinner"></div>';
+  window.scrollTo({top:0,behavior:'smooth'});
   
   if (!CONFIG.GOOGLE_API_KEY || !CONFIG.GOOGLE_CX) {
     showError('Please configure Google API Key and CX in the code.');
@@ -703,39 +933,38 @@ async function yakinSearch(query, type = 'web', page = 1) {
       return;
     }
     
-    const items = data.items || [];
-    displayResults(items, query, page);
-    
+    displayResults(data.items || [], query, page);
   } catch (e) {
-    console.error(e);
-    showError('Search failed. Please check your internet connection.');
+    showError('Search failed. Check your connection.');
   }
 }
 
 function displayResults(items, query, page) {
   if (items.length === 0) {
-    elements.results.innerHTML = '<div class="result-card">No results found.</div>';
+    elements.results.innerHTML = `
+      <div class="result-card" style="text-align:center;padding:40px">
+        <div style="font-size:3rem;margin-bottom:12px">🔍</div>
+        <h3>No results found for "${escapeHtml(query)}"</h3>
+        <p class="note" style="margin-top:8px">Try different keywords or check your spelling</p>
+      </div>`;
     return;
   }
   
   let html = '';
   
-  // AI Summary (if enabled)
   if (doguAiMode && items.length > 0) {
     html += generateAISummary(items);
   }
   
-  // Results
   items.forEach(item => {
     try {
-      const domain = new URL(item.link).hostname;
+      const url = new URL(item.link);
+      const domain = url.hostname;
       html += `
         <div class="result-card">
-          <a class="result-title" href="${item.link}" target="_blank" rel="noopener">
-            ${item.title}
-          </a>
+          <a class="result-title" href="${item.link}" target="_blank" rel="noopener">${item.title}</a>
           <div class="result-url">
-            <img class="result-favicon" src="https://www.google.com/s2/favicons?domain=${domain}" alt="" width="16" height="16">
+            <img class="result-favicon" src="https://www.google.com/s2/favicons?domain=${domain}&sz=32" alt="" width="16" height="16">
             ${domain}
           </div>
           <div class="result-snippet">${item.snippet || ''}</div>
@@ -745,11 +974,10 @@ function displayResults(items, query, page) {
     }
   });
   
-  // Pagination
   html += `
     <div class="pagination">
-      <button class="page-btn" onclick="yakinSearch('${escapeHtml(query)}','${currentTab}',${page-1})" ${page===1?'disabled':''}>‹ Prev</button>
-      <span style="color:var(--muted);font-size:.9rem;">Page ${page}</span>
+      <button class="page-btn" onclick="yakinSearch('${escapeHtml(query)}','${currentTab}',${page-1})" ${page===1?'disabled':''}>‹ Previous</button>
+      <span style="color:var(--muted);font-size:0.9rem">Page ${page}</span>
       <button class="page-btn" onclick="yakinSearch('${escapeHtml(query)}','${currentTab}',${page+1})">Next ›</button>
     </div>`;
   
@@ -759,7 +987,7 @@ function displayResults(items, query, page) {
 function generateAISummary(items) {
   const snippets = items.map(i => i.snippet).filter(s => s).join(' ');
   const sentences = (snippets.match(/[^\.!\?]+[\.!\?]+/g) || [])
-    .filter(s => s.length > 50)
+    .filter(s => s.length > 40)
     .slice(0, 3);
   
   if (sentences.length === 0) return '';
@@ -770,9 +998,10 @@ function generateAISummary(items) {
         <div class="dogu-ai-icon">✨</div>
         <b>Doğu AI Summary</b>
       </div>
-      <div class="result-snippet">
+      <div style="color:var(--text);line-height:1.6">
         ${sentences.map(s => `• ${s.trim()}`).join('<br>')}
       </div>
+      <div class="note" style="margin-top:12px;font-size:0.8rem">Generated from top search results</div>
     </div>`;
 }
 
@@ -784,19 +1013,19 @@ function handleMusicQuery(query) {
     <div class="result-card">
       <div class="dogu-ai-header">
         <div class="dogu-ai-icon">🎵</div>
-        <b>Play: ${escapeHtml(musicData.fullQuery)}</b>
+        <b>Playing: ${escapeHtml(musicData.fullQuery)}</b>
       </div>
-      ${musicData.artist ? `<p class="note">Artist: ${escapeHtml(musicData.artist)}</p>` : ''}
+      ${musicData.artist ? `<p style="color:var(--muted);margin-bottom:16px">Artist: ${escapeHtml(musicData.artist)}</p>` : ''}
       <div class="music-options">
-        <button class="music-btn" onclick="playYouTube('${escapeHtml(musicData.fullQuery)}')">YouTube</button>
-        <button class="music-btn" onclick="playSpotify('${escapeHtml(musicData.fullQuery)}')">Spotify</button>
-        <button class="music-btn" onclick="playYouTubeMusic('${escapeHtml(musicData.fullQuery)}')">YouTube Music</button>
+        <button class="music-btn" onclick="playYouTube('${escapeHtml(musicData.fullQuery)}')">▶️ YouTube</button>
+        <button class="music-btn" onclick="playSpotify('${escapeHtml(musicData.fullQuery)}')">🎧 Spotify</button>
+        <button class="music-btn" onclick="playYouTubeMusic('${escapeHtml(musicData.fullQuery)}')">🎵 YT Music</button>
       </div>
-      ${CONFIG.YOUTUBE_API_KEY ? `<p class="note">Auto-playing preview below...</p><div id="embedBox"></div>` : ''}
+      <div id="embedBox"></div>
     </div>`;
   
   if (CONFIG.YOUTUBE_API_KEY) {
-    setTimeout(() => playYouTube(musicData.fullQuery), 500);
+    setTimeout(() => playYouTube(musicData.fullQuery), 800);
   }
 }
 
@@ -825,19 +1054,17 @@ async function playYouTube(query) {
     window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`, '_blank');
     return;
   }
-  
   try {
     const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(query)}&key=${CONFIG.YOUTUBE_API_KEY}&maxResults=1`);
     const data = await res.json();
-    
-    if (data.items?.length > 0) {
-      const embedBox = document.getElementById('embedBox');
-      if (embedBox) {
-        embedBox.innerHTML = `<iframe src="https://www.youtube.com/embed/${data.items[0].id.videoId}?autoplay=1" width="100%" height="300" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    if (data.items?.[0]) {
+      const embed = document.getElementById('embedBox');
+      if (embed) {
+        embed.innerHTML = `<iframe src="https://www.youtube.com/embed/${data.items[0].id.videoId}?autoplay=1" width="100%" height="360" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
       }
     }
   } catch (e) {
-    console.error('YouTube API error:', e);
+    console.error('YouTube error:', e);
   }
 }
 
@@ -849,7 +1076,7 @@ function playYouTubeMusic(query) {
   window.open(`https://music.youtube.com/search?q=${encodeURIComponent(query)}`, '_blank');
 }
 
-// Voice Recognition
+// Voice
 function initSpeechRecognition() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
     elements.voiceBtn.style.display = 'none';
@@ -865,40 +1092,34 @@ function initSpeechRecognition() {
   recognition.onstart = () => {
     isListening = true;
     elements.voiceStatus.style.display = 'flex';
-    elements.input.placeholder = 'Listening...';
+    elements.input.placeholder = 'Listening... Speak now';
+    elements.voiceBtn.classList.add('active');
   };
   
   recognition.onresult = (e) => {
     const transcript = e.results[0][0].transcript;
     elements.input.value = transcript;
+    stopListening();
     handleSearch(transcript);
   };
   
-  recognition.onerror = () => {
-    stopListening();
-  };
-  
-  recognition.onend = () => {
-    stopListening();
-  };
+  recognition.onerror = stopListening;
+  recognition.onend = stopListening;
 }
 
 function toggleVoice() {
   if (!recognition) return;
-  if (isListening) {
-    recognition.stop();
-  } else {
-    recognition.start();
-  }
+  isListening ? recognition.stop() : recognition.start();
 }
 
 function stopListening() {
   isListening = false;
   elements.voiceStatus.style.display = 'none';
+  elements.voiceBtn.classList.remove('active');
   elements.input.placeholder = doguAiMode ? 'Ask Doğu AI anything...' : 'Search the web...';
 }
 
-// File Handling
+// Files
 function openFileModal() {
   elements.fileModal.style.display = 'flex';
   renderFileList();
@@ -921,27 +1142,25 @@ function handleFileSelect(e) {
 
 function processFiles(files) {
   files.forEach(file => {
-    const fileData = {
+    uploadedFiles.unshift({
       name: file.name,
       size: file.size,
       type: file.type,
       lastModified: file.lastModified,
       preview: URL.createObjectURL(file),
-      id: Date.now() + Math.random().toString(36).substr(2, 9)
-    };
-    
-    uploadedFiles.unshift(fileData);
+      id: Date.now().toString(36) + Math.random().toString(36).substr(2)
+    });
     if (uploadedFiles.length > 10) uploadedFiles.pop();
   });
   
   localStorage.setItem('yakinFiles', JSON.stringify(uploadedFiles));
   renderFileList();
-  showMessage(`Uploaded ${files.length} file(s) successfully.`);
+  showMessage(`📁 Uploaded ${files.length} file(s) successfully`);
 }
 
 function renderFileList() {
   if (uploadedFiles.length === 0) {
-    elements.fileList.innerHTML = '<p class="note" style="text-align:center">No files uploaded yet</p>';
+    elements.fileList.innerHTML = '<p class="note" style="text-align:center;padding:20px">No files uploaded yet</p>';
     return;
   }
   
@@ -949,8 +1168,8 @@ function renderFileList() {
     <div class="file-item">
       <span class="file-name">📄 ${escapeHtml(file.name)}</span>
       <span class="file-size">${formatFileSize(file.size)}</span>
-      <button class="file-action-btn" onclick="window.open('${file.preview}', '_blank')" title="Open">👁️</button>
-      <button class="file-action-btn" onclick="removeFile('${file.id}')" title="Remove">🗑️</button>
+      <button class="file-action-btn" onclick="window.open('${file.preview}', '_blank')" title="View">👁️</button>
+      <button class="file-action-btn" onclick="removeFile('${file.id}')" title="Delete">🗑️</button>
     </div>
   `).join('');
 }
@@ -962,24 +1181,24 @@ function removeFile(id) {
 }
 
 function formatFileSize(bytes) {
-  if (bytes === 0) return '0 Bytes';
+  if (bytes === 0) return '0 B';
   const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
 
 function searchOnService(service) {
   const query = elements.input.value.trim();
-  const serviceQueries = {
+  const prefixes = {
     googleDrive: 'site:drive.google.com',
     dropbox: 'site:dropbox.com',
     onedrive: 'site:onedrive.live.com',
     icloud: 'site:icloud.com'
   };
   
-  if (query && serviceQueries[service]) {
-    yakinSearch(`${serviceQueries[service]} ${query}`, 'web', 1);
+  if (query && prefixes[service]) {
+    yakinSearch(`${prefixes[service]} ${query}`, 'web', 1);
   } else {
     openService(service);
   }
@@ -990,17 +1209,20 @@ function openService(service) {
   const urls = {
     wetransfer: 'https://wetransfer.com',
     github: 'https://github.com',
+    figma: 'https://figma.com',
+    notion: 'https://notion.so',
     googledrive: 'https://drive.google.com',
     dropbox: 'https://dropbox.com',
     onedrive: 'https://onedrive.live.com',
     icloud: 'https://icloud.com'
   };
   window.open(urls[service] || `https://${service}.com`, '_blank');
+  closeFileModal();
 }
 
-// History & UI
+// UI Helpers
 function addToHistory(q) {
-  if (!q.trim()) return;
+  if (!q) return;
   searchHistory = searchHistory.filter(item => item.toLowerCase() !== q.toLowerCase());
   searchHistory.unshift(q);
   searchHistory = searchHistory.slice(0, 10);
@@ -1009,18 +1231,17 @@ function addToHistory(q) {
 
 function renderHistory() {
   if (searchHistory.length === 0 && uploadedFiles.length === 0) {
-    showWelcome();
     return;
   }
   
-  let html = '';
+  let html = '<div style="max-width:584px;margin:0 auto;padding:0 24px">';
   
   if (uploadedFiles.length > 0) {
     html += `
-      <div class="result-card">
-        <b>📁 Recent Files</b>
+      <div style="margin-bottom:24px">
+        <div style="color:var(--muted);font-size:0.85rem;margin-bottom:12px;font-weight:600">RECENT FILES</div>
         ${uploadedFiles.slice(0, 3).map(f => `
-          <div class="file-item" style="margin-top:8px;cursor:pointer" onclick="window.open('${f.preview}', '_blank')">
+          <div class="file-item" style="cursor:pointer" onclick="window.open('${f.preview}', '_blank')">
             <span class="file-name">📄 ${escapeHtml(f.name)}</span>
             <span class="file-size">${formatFileSize(f.size)}</span>
           </div>`).join('')}
@@ -1029,8 +1250,8 @@ function renderHistory() {
   
   if (searchHistory.length > 0) {
     html += `
-      <div class="result-card">
-        <b>🕐 Recent Searches</b>
+      <div>
+        <div style="color:var(--muted);font-size:0.85rem;margin-bottom:12px;font-weight:600">RECENT SEARCHES</div>
         ${searchHistory.map(item => `
           <div class="history-item" onclick="elements.input.value='${escapeHtml(item)}'; handleSearch('${escapeHtml(item)}')">
             ${escapeHtml(item)}
@@ -1038,26 +1259,8 @@ function renderHistory() {
       </div>`;
   }
   
+  html += '</div>';
   elements.results.innerHTML = html;
-}
-
-function showWelcome() {
-  elements.results.innerHTML = `
-    <div class="result-card">
-      <div class="dogu-ai-header">
-        <div class="dogu-ai-icon">🚀</div>
-        <b>Welcome to Yakin Search</b>
-      </div>
-      <p style="color:var(--muted)">Try these commands:</p>
-      <ul style="color:var(--muted);padding-left:20px">
-        <li>Type any query to search the web</li>
-        <li>Say <b>"play [song name]"</b> for music</li>
-        <li>Say <b>"open gmail"</b> to open sites</li>
-        <li>Click ✨ for AI summaries</li>
-        <li>Drag files to upload (stored locally)</li>
-      </ul>
-      <p class="note" style="margin-top:16px">💡 Tip: Press <kbd>/</kbd> to focus search, <kbd>Ctrl+K</kbd> for files</p>
-    </div>`;
 }
 
 function switchTab(type) {
@@ -1077,33 +1280,30 @@ function toggleAiMode() {
 
 function handleInputKeydown(e) {
   if (e.key === 'Enter') {
+    e.preventDefault();
     handleSearch(elements.input.value);
   } else if (e.key === '/' && document.activeElement !== elements.input) {
     e.preventDefault();
     elements.input.focus();
-    elements.input.select();
   } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
     e.preventDefault();
     openFileModal();
   } else if (e.key === 'Escape') {
     if (isListening && recognition) recognition.stop();
-    elements.input.blur();
+    if (elements.fileModal.style.display === 'flex') {
+      closeFileModal();
+    } else {
+      elements.input.blur();
+    }
   }
 }
 
-function resetSearch() {
-  elements.input.value = '';
-  elements.header.classList.remove('top-mode');
-  elements.tabs.classList.remove('visible');
-  renderHistory();
-}
-
 function showMessage(msg) {
-  elements.results.innerHTML = `<div class="result-card">${escapeHtml(msg)}</div>`;
+  elements.results.innerHTML = `<div class="result-card" style="text-align:center">${escapeHtml(msg)}</div>`;
 }
 
 function showError(msg) {
-  elements.results.innerHTML = `<div class="result-card" style="border-left:4px solid #ef4444">${escapeHtml(msg)}</div>`;
+  elements.results.innerHTML = `<div class="result-card" style="border-left:3px solid #ef4444;color:#fecaca">${escapeHtml(msg)}</div>`;
 }
 
 function escapeHtml(text) {
@@ -1111,11 +1311,6 @@ function escapeHtml(text) {
   div.textContent = text;
   return div.innerHTML;
 }
-
-// Close modal on outside click
-elements.fileModal.addEventListener('click', (e) => {
-  if (e.target === elements.fileModal) closeFileModal();
-});
 
 // Start
 init();
