@@ -34,8 +34,8 @@ body{
 /* Top Left Logo - Fixed Position */
 .top-logo{
   position:fixed;
-  top:20px;
-  right:20px;
+  top:16px;
+  right:16px;
   width:100px;
   height:50px;
   object-fit:contain;
@@ -48,11 +48,19 @@ body{
   border:1px solid var(--border);
 }
 .top-logo:hover{
-  transform:scale(1.05);
+  transform:scale(1.1);
   opacity:0.9;
   border-color:var(--accent);
 }
 
+/* Adjust logo when in search mode */
+header.top-mode ~ .top-logo{
+  width:36px;
+  height:36px;
+  top:12px;
+  left:12px;
+}
+/* Mobile responsiveness */
 @media(max-width:768px){
   .top-logo{
     width:60px;      /* Medium on mobile */
@@ -61,9 +69,8 @@ body{
     left:12px;
   }
   header.top-mode ~ .top-logo{
-    display:none;    /* Hide on mobile when searching */
+    display:none;  
   }
-  /* ... rest of mobile styles ... */
 }
   
 header{
@@ -224,6 +231,7 @@ header.top-mode .clear-btn{
   0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4);}
   50%{box-shadow:0 0 0 8px rgba(239,68,68,0);}
 }
+
 .hotword-badge{
   position:absolute;
   top:-8px;
@@ -710,7 +718,7 @@ header.top-mode .action-buttons{
 <img id="topLogo" class="top-logo" src="logo.jpg" alt="Yakin Search" title="Click to reset search">
 
 <header id="mainHeader">
-  <div class="yakin-logo">🚀Yakin Search</div>
+  <div class="yakin-logo">🚀 Yakin Search</div>
   
   <div class="search-container">
     <div class="search-box">
@@ -731,7 +739,7 @@ header.top-mode .action-buttons{
   
   <div class="action-buttons">
     <button class="action-btn" onclick="handleSearch(elements.input.value)">Yakin Search</button>
-    <button class="action-btn" onclick="handleSearch(elements.input.value)">I'm hopeful</button>
+    <button class="action-btn" onclick="handleSearch(elements.input.value)">I'm Hopeful</button>
   </div>
   
   <div class="welcome-hint" id="welcomeHint">
@@ -739,6 +747,7 @@ header.top-mode .action-buttons{
     <small style="opacity:0.7">Say: "Search...", "Open...", "Play...", or "Clear" • You have 10 seconds after wake word</small>
   </div>
 </header>
+
 
 
 <div class="voice-status" id="voiceStatus">
@@ -893,13 +902,14 @@ function resetSearch() {
   elements.input.value = '';
   elements.clearBtn.classList.remove('visible');
   
-  // THIS LINE shows the logo (removes top-mode class):
+  // Reset to center mode
   elements.header.classList.remove('top-mode');
   elements.tabs.classList.remove('visible');
   elements.results.innerHTML = '';
   elements.welcomeHint.style.display = 'block';
   elements.welcomeHint.innerHTML = 'Click 🎤 to activate voice • Always listening when ON<br><small style="opacity:0.7">Say: "Search...", "Open...", "Play...", or "Clear" • You have 10 seconds after wake word</small>';
   
+  // Focus input
   elements.input.focus();
   
   console.log('Search reset via logo click');
@@ -1479,7 +1489,7 @@ function formatFileSize(bytes) {
 function searchOnService(service) {
   const query = elements.input.value.trim();
   const prefixes = {
-    googleDrive: 'site:accounts.google.com/',
+    googleDrive: 'site:drive.google.com',
     dropbox: 'site:dropbox.com',
     onedrive: 'site:onedrive.live.com',
     icloud: 'site:icloud.com'
@@ -1499,7 +1509,7 @@ function openService(service) {
     github: 'https://github.com',
     figma: 'https://figma.com',
     notion: 'https://notion.so',
-    googledrive: 'https://accounts.google.com/',
+    googledrive: 'https://drive.google.com',
     dropbox: 'https://dropbox.com',
     onedrive: 'https://onedrive.live.com',
     icloud: 'https://icloud.com'
