@@ -53,12 +53,15 @@ body{
   border-color:var(--accent);
 }
 
-/* Adjust logo when in search mode */
+  /* Hide logo completely in search mode on desktop */
+@media(min-width:769px){
+  header.top-mode ~ .top-logo{
+    display: none;
+  }
+}
+/* Hide logo when in search mode (desktop) */
 header.top-mode ~ .top-logo{
-  width:36px;
-  height:36px;
-  top:12px;
-  left:12px;
+  display: none;    /* Hidden in search mode */
 }
 
 header{
